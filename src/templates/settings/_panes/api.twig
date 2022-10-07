@@ -1,0 +1,34 @@
+{% import '_includes/forms' as forms %}
+{% import 'commerce-shipmondo/_includes/macros' as macros %}
+
+<div id="api" class="flex-fields">
+	{{ forms.textField({
+  first: true,
+  label: 'API User',
+  name: 'apiUser',
+  value: settings.apiUser,
+  warning: macros.configWarning('apiUser', 'commerce-shipmondo'),
+  readonly: macros.readOnly('apiUser', 'commerce-shipmondo'),
+  fieldClass: "width-50",
+}) }}
+
+	{{ forms.textField({
+  first: true,
+  label: 'API Key',
+  name: 'apiKey',
+  value: settings.apiKey,
+  warning: macros.configWarning('apiKey', 'commerce-shipmondo'),
+  readonly: macros.readOnly('apiKey', 'commerce-shipmondo'),
+  fieldClass: "width-50",
+}) }}
+
+	{# {{ forms.textField({
+				  first: true,
+				  label: 'Webhook Key',
+				  name: 'webhookKey',
+				  value: settings.webhookKey,
+				  warning: macros.configWarning('webhookKey', 'commerce-shipmondo'),
+				  readonly: macros.readOnly('webhookKey', 'commerce-shipmondo'),
+				  fieldClass: "width-50",
+				}) }} #}
+</div>

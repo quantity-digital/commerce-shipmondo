@@ -1,0 +1,29 @@
+<div class="order-meta-container">
+	<div class="meta read-only">
+		{% if order.servicePointId %}
+			<div class="data">
+				<h5 class="heading">{{ "Service point"|t('commerce-shipmondo') }}</h5>
+				{% set info = [] %}
+
+				{% if order.servicePointSnapshot %}
+					{% set snapshot = order.servicePointSnapshot|json_decode %}
+
+					{% set info = [
+						{ label: "Service Point ID"|t('commerce-shipmondo'), type: 'code', value: order.servicePointId },
+						{ label: "Carrier"|t('commerce-shipmondo'), type: 'code', value: snapshot.carrier_code is defined ? snapshot.carrier_code:'' },
+						{ label: "Name"|t('commerce-shipmondo'), value: snapshot.name is defined ? snapshot.name :'' },
+						{ label: "Address"|t('commerce-shipmondo'), value: snapshot.address is defined ? snapshot.address :'' },
+						{ label: "Postal Code"|t('commerce-shipmondo'), value: snapshot.zipcode is defined ? snapshot.zipcode :'' },
+						{ label: "City"|t('commerce-shipmondo'), value: snapshot.city is defined ?snapshot.city :'' },
+						{ label: "Country"|t('commerce-shipmondo'), value: snapshot.country is defined ? snapshot.country :'' },
+					] %}
+				{% endif %}
+
+				<p class="value infoRow" data-info="{{ info|json_encode }}">
+					{{ order.servicePointId }}
+					<span class="tableRowInfo" data-icon="info"></span>
+				</p>
+			</div>
+		{% endif %}
+	</div>
+</div>

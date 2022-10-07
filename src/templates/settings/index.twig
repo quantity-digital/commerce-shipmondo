@@ -1,0 +1,87 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set fullPageForm = allowAdminChanges %}
+
+{% set title = "Shipmondo Settings" %}
+{% set docTitle = title ~ ' - ' ~ "Plugins"|t('app') %}
+{% set crumbs = [
+    { label: "Settings"|t('app'), url: url('settings') },
+    { label: "Plugins"|t('app'), url: url('settings/plugins') }
+] %}
+{% set selectedSubnavItem = 'settings' %}
+
+{% set tabs = [
+    { label: 'API'|t('commerce-shipmondo'), url: '#settings-api' },
+    { label: 'Order sync'|t('commerce-shipmondo'), url: '#settings-order-sync' },
+    { label: 'Fields mapping'|t('commerce-shipmondo'), url: '#settings-fields-mapping' },
+] %}
+
+{% block actionButton %}
+	{% if allowAdminChanges %}
+		{{ parent() }}
+	{% endif %}
+{% endblock actionButton %}
+
+{% set adminChangesWarning %}
+{% if not allowAdminChanges %}
+	<div class="pane">
+		<p class="warning">
+			{{ "You're not allowed to change system settings. Some of the settings have been disabled."|t('commerce-sendcloud') }}
+		</p>
+	</div>
+{% endif %}
+{% endset %}
+
+{% block content %}
+	{{ actionInput('plugins/save-plugin-settings') }}
+	{{ hiddenInput('pluginHandle', 'commerce-shipmondo') }}
+	{{ redirectInput('shipmondo/settings') }}
+
+	{% namespace 'settings' %}
+	<div id="fields">
+		<div>
+			{% include "commerce-shipmondo/settings/_panes/api" %}
+			{% include "commerce-shipmondo/settings/_panes/order-sync" %}
+			{% include "commerce-shipmondo/settings/_panes/fields" %}
+		</div>
+	</div>
+	{% endnamespace %}
+
+	<script>
+		{% js %}
+$('#settings-orderStatusesToPush, #settings-orderStatusesToCreateLabel').selectize({plugins: ['remove_button'], dropdownParent: 'body'});
+
+var loadingLabel = $(this).find('.integration-loading');
+var shippingMethodsTable = $('#settings-shippingMethods tbody');
+var shippingMethodsLoader = $('#settings-shippingMethods tfoot');
+
+$.ajax('{{ actionUrl('commerce-shipmondo/settings/get-shipping-templates') }}', {}).done(function (data) {
+shippingMethodsLoader.hide();
+updateShippingMethodTable(data);
+});
+
+var updateShippingMethodTable = function (data) {
+console.log(data)
+shippingMethodsTable.empty();
+
+for (var i in data.shippingMethods) {
+shippingMethodsTable.append($('<tr>').append($('<td>').append(data.shippingMethods[i].craftId ? $('<a>').attr('href', "{{ cpUrl('commerce/shipping/shippingmethods') }}/" + data.shippingMethods[i].craftId).attr('target', '_blank').text(data.shippingMethods[i].name) : $('<span>').text(data.shippingMethods[i].name))).append($('<td>').text(data.shippingMethods[i].carrier)).append($('<td>').text(parseInt(data.shippingMethods[i].minimumWeight) / 1000)).append($('<td>').text(parseInt(data.shippingMethods[i].maximumWeight) / 1000)).append($('<td>').html(data.shippingMethods[i].allowsServicePoints ? '&check;' : '')).append($('<td>').append(data.shippingMethods[i].craftId ? '&check;' : $('<a>').attr('href', '#').attr('class', 'create-shipping-method add icon').data(data.shippingMethods[i]).attr('title', '{{ "Create"|t('commerce-sendcloud') }}'))));
+}
+};
+
+{% endjs %}
+	</script>
+
+	<style>
+		{% css %}body .selectize-dropdown-content > div[data-value="new"]:before {
+			content: '';
+			margin-right: 0;
+		}
+		body .selectize-dropdown-content > div[data-value="new"]:after {
+			content: '';
+		}
+		{% endcss %}
+	</style>
+
+{% endblock content %}

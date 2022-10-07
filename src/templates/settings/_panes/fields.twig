@@ -1,0 +1,76 @@
+{% import "_includes/forms" as forms %}
+{% import 'commerce-shipmondo/_includes/macros' as macros %}
+<div id="fields-mapping" class="hidden flex-fields">
+	{{ adminChangesWarning }}
+
+	<h2>{{ "Order"|t('commerce-shipmondo') }}</h2>
+
+	{{ forms.selectField({
+		label:        "Order note mapping"|t('commerce-sendcloud'),
+		instructions: "Select the field containing the order notes. "|t('commerce-shipmondo'),
+		id:           'orderNoteHandle',
+		name:         'orderNoteHandle',
+		options:      settings.getAvailableTextFields(),
+		value:        settings.orderNoteHandle,
+		errors:       settings.getErrors('orderNoteHandle'),
+		disabled:     not allowAdminChanges,
+		fieldClass: "width-25",
+		warning: macros.configWarning('orderNoteHandle', 'commerce-shipmondo'),
+	}) }}
+
+	<h2>{{ "Variants"|t('commerce-shipmondo') }}</h2>
+
+	{{ forms.selectField({
+		label:        "Variant barcode mapping"|t('commerce-sendcloud'),
+		instructions: "Select the field containing the barcode."|t('commerce-shipmondo'),
+		id:           'itemBarcodeHandle',
+		name:         'itemBarcodeHandle',
+		options:      settings.getAvailableTextFields(),
+		value:        settings.itemBarcodeHandle,
+		errors:       settings.getErrors('itemBarcodeHandle'),
+		disabled:     not allowAdminChanges,
+		fieldClass: "width-25",
+		warning: macros.configWarning('itemBarcodeHandle', 'commerce-shipmondo'),
+	}) }}
+
+	{{ forms.selectField({
+		label:        "Variant bin mapping"|t('commerce-sendcloud'),
+		instructions: "Select the field containing the bin/location."|t('commerce-shipmondo'),
+		id:           'itemBinHandle',
+		name:         'itemBinHandle',
+		options:      settings.getAvailableTextFields(),
+		value:        settings.itemBinHandle,
+		errors:       settings.getErrors('itemBinHandle'),
+		disabled:     not allowAdminChanges,
+		fieldClass: "width-25",
+		warning: macros.configWarning('itemBinHandle', 'commerce-shipmondo'),
+	}) }}
+
+	{{ forms.selectField({
+		label:        "Variant image mapping"|t('commerce-sendcloud'),
+		instructions: "Select the field containing the variant image. "|t('commerce-shipmondo'),
+		id:           'itemImageUrlHandle',
+		name:         'itemImageUrlHandle',
+		options:      settings.getAvailableTextFields(),
+		value:        settings.itemImageUrlHandle,
+		errors:       settings.getErrors('itemImageUrlHandle'),
+		disabled:     not allowAdminChanges,
+		fieldClass: "width-25",
+		warning: macros.configWarning('itemImageUrlHandle', 'commerce-shipmondo'),
+	}) }}
+
+	<h2>{{ "Address"|t('commerce-shipmondo') }}</h2>
+
+	{{ forms.selectField({
+		label:        "Address phone mapping"|t('commerce-sendcloud'),
+		instructions: "Select the field containing the phone. "|t('commerce-shipmondo'),
+		id:           'addresPhoneHandle',
+		name:         'addresPhoneHandle',
+		options:      settings.getAvailableTextFields(),
+		value:        settings.addresPhoneHandle,
+		errors:       settings.getErrors('addresPhoneHandle'),
+		disabled:     not allowAdminChanges,
+		fieldClass: "width-25",
+		warning: macros.configWarning('addresPhoneHandle', 'commerce-shipmondo'),
+	}) }}
+</div>

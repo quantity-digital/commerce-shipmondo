@@ -1,0 +1,13 @@
+{% import '_includes/forms' as forms -%}
+<hr>
+<h2>Shipmondo</h2>
+
+{{ forms.selectField({
+	label: 'Shipmondo shipping template' | t('webshipper'),
+	instructions: 'Choose the Shipmondo shipping templates' | t('webshipper'),
+	id: 'shipmondoTemplateId',
+	name: 'shipmondoTemplateId',
+	value: shipmondoTemplateId,
+	options: shipmondoTemplates,
+	required: true
+}) }}
