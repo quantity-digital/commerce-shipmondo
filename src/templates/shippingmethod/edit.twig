@@ -2,12 +2,27 @@
 <hr>
 <h2>Shipmondo</h2>
 
-{{ forms.selectField({
-	label: 'Shipmondo shipping template' | t('webshipper'),
-	instructions: 'Choose the Shipmondo shipping templates' | t('webshipper'),
-	id: 'shipmondoTemplateId',
-	name: 'shipmondoTemplateId',
-	value: shipmondoTemplateId,
-	options: shipmondoTemplates,
-	required: true
-}) }}
+<div class="flex-fields">
+  <div class="field width-50">
+  {{ forms.selectField({
+    label: 'Shipmondo shipping template' | t('shipmondo'),
+    instructions: 'Choose the Shipmondo shipping templates' | t('shipmondo'),
+    id: 'shipmondoTemplateId',
+    name: 'shipmondoTemplateId',
+    value: shipmondoTemplateId,
+    options: shipmondoTemplates,
+    required: true
+  }) }}
+  </div>
+  <div class="field width-50">
+  {{ forms.lightswitchField({
+      label: "Use own agreement"|t,
+      id: 'useOwnAgreement',
+      name: 'useOwnAgreement',
+      instructions: "If checked, shipments will use own agreement",
+      value: 1,
+      on: useOwnAgreement,
+      errors: shippingMethod.getErrors('useOwnAgreement')
+    }) }}
+  </div>
+</div>

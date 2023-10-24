@@ -1,41 +1,41 @@
 {
-	"name": "quantity-digital/commerce-shipmondo",
-	"description": "Shipmondo integration for Craft Commerce",
-	"type": "craft-plugin",
-	"version": "1.0.0",
-	"keywords": [
-		"craft",
-		"cms",
-		"craftcms",
-		"craft-plugin",
-		"craft-commerce",
-		"shipping",
-		"webshipper"
-	],
-	"support": {
-		"docs": "https://github.com/quantity-digital/commerce-shipmondo/blob/master/README.md",
-		"issues": "https://github.com/quantity-digital/commerce-shipmondo/issues"
-	},
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Quantity Digital",
-			"homepage": "https://www.quantity.dk/"
-		}
-	],
-	"require": {
-		"craftcms/cms": "^4.0",
-		"craftcms/commerce": "^4.0",
-		"firebase/php-jwt": "^6.2"
-	},
-	"autoload": {
-		"psr-4": {
-			"QD\\commerce\\shipmondo\\": "src/"
-		}
-	},
-	"extra": {
-		"name": "Shipmondo",
-		"handle": "commerce-shipmondo",
-		"class": "QD\\commerce\\shipmondo\\Shipmondo"
-	}
+  "name": "quantity-digital/commerce-shipmondo",
+  "description": "Shipmondo integration for Craft Commerce 4",
+  "type": "craft-plugin",
+  "version": "4.0.0",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-plugin",
+    "craft-commerce",
+    "shipping",
+    "shipmondo"
+  ],
+  "support": {
+    "docs": "https://github.com/quantity-digital/commerce-shipmondo/blob/master/README.md",
+    "issues": "https://github.com/quantity-digital/commerce-shipmondo/issues"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Quantity Digital",
+      "homepage": "https://www.quantity.dk/"
+    }
+  ],
+  "require": {
+    "craftcms/cms": "^4.0",
+    "craftcms/commerce": "^4.0",
+    "firebase/php-jwt": "^6.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "QD\\commerce\\shipmondo\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "Shipmondo",
+    "handle": "commerce-shipmondo",
+    "class": "QD\\commerce\\shipmondo\\Shipmondo"
+  }
 }

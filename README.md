@@ -1,8 +1,6 @@
-<p><img src="./src/icon.svg" width="100" height="100" alt="Webshipper for Craft Commerce icon"></p>
-
 # Shipmondo for Craft Commerce
 
-This plugin provides an [Shipmondo](https://shipmondo.com/) integration for [Craft Commerce](https://craftcms.com/commerce).
+This plugin provides an [Shipmondo](https://shipmondo.dk/) integration for [Craft Commerce](https://craftcms.com/commerce).
 
 ## Requirements
 
@@ -33,16 +31,18 @@ composer require quantity-digital/commerce-shipmondo
 
 ## Setup
 
-This plugin will, after you have filled in the required settings on the settings page, add a new field on Craft's default shipping methods editor screen, where you can connect a shipping method in Craft to the shipping method in Webshipper.
+This plugin will, after you have filled in the required settings on the settings page, add a new field on Craft's default shipping methods editor screen, where you can connect a shipping method in Craft to the shipping method in Shipmondo.
 
 All syncronizations between Craft and Shipmondo is handled automaticly using Craft Queue.
 
+> **Tip:** The Account name, Secret token and webhook token can be set to environment variables. See [Environmental Configuration](https://craftcms.com/docs/3.x/config/#environmental-configuration) in the Craft docs for more information.
+
 ## Usage
 
-To get droppoints on the front, you can call the endpoint `/shipmondo/services/list-service-point`, after the shipping address has been added, to receive available droppoints based on the selected shipping address.
+To get droppoints on the front, you can call the endpoint '/shipmondo/services/list-service-points', after the shipping address has been added, to receive available droppoints based on the selected shipping address.
 
 ## Webhook support
 
 This plugin currently supports the following webhooks:
 
-* Update status
+- shipments/created

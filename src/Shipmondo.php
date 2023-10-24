@@ -9,6 +9,8 @@
 namespace QD\commerce\shipmondo;
 
 use Craft;
+use yii\log\FileTarget;
+
 use craft\base\Model as BaseModel;
 use craft\base\Plugin as BasePlugin;
 use craft\commerce\base\ShippingMethod;
@@ -31,145 +33,162 @@ use yii\base\Event;
 class Shipmondo extends BasePlugin
 {
 
-	use Routes;
-	use Services;
+    use Routes;
+    use Services;
 
-	// Static Properties
-	// =========================================================================
+    // Static Properties
+    // =========================================================================
 
-	public static $plugin;
+    public static $plugin;
 
-	/**
-	 * @var bool
-	 */
-	public static $commerceInstalled = false;
+    /**
+     * @var bool
+     */
+    public static $commerceInstalled = false;
 
-	// Public Properties
-	// =========================================================================
+    // Public Properties
+    // =========================================================================
 
-	/**
-	 * Schema version
-	 *
-	 * @var string
-	 */
-	public string $schemaVersion = "1.0.0";
+    /**
+     * Schema version
+     *
+     * @var string
+     */
+    public string $schemaVersion = "1.0.2";
 
-	/**
-	 * @inheritDoc
-	 */
-	public bool $hasCpSettings = true;
+    /**
+     * @inheritDoc
+     */
+    public bool $hasCpSettings = true;
 
-	// Public Methods
-	// =========================================================================
+    // Public Methods
+    // =========================================================================
 
-	/**
-	 * @inheritdoc
-	 */
-	public function init()
-	{
-		parent::init();
+    // public static function log($message)
+    // {
+    //     Craft::getLogger()->log($message, \yii\log\Logger::LEVEL_INFO, 'commerce-shipmondo');
+    // }
 
-		self::$plugin = $this;
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        // $fileTarget = new FileTarget([
+        //     'logFile' => __DIR__ . '/webhooks.log', // <--- path of the log file
+        //     'categories' => ['commerce-shipmondo'] // <--- categories in the file
+        // ]);
+        // // include the new target file target to the dispatcher
+        // Craft::getLogger()->dispatcher->targets[] = $fileTarget;
+        parent::init();
 
-		self::$commerceInstalled = class_exists(Commerce::class);
+        self::$plugin = $this;
 
-		$this->initComponents();
-		$this->_registerCpRoutes();
-		$this->_registerSiteRoutes();
-		$this->_registerGlobalEvents();
-		$this->_registerCpEvents();
-		$this->_defineBehaviors();
-	}
+        self::$commerceInstalled = class_exists(Commerce::class);
 
-	public function getPluginName()
-	{
-		return 'Shipmondo';
-	}
+        $this->initComponents();
+        $this->_registerCpRoutes();
+        $this->_registerSiteRoutes();
+        $this->_registerGlobalEvents();
+        $this->_registerCpEvents();
+        $this->_defineBehaviors();
+    }
 
-	public function getSettingsResponse(): mixed
-	{
-		return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('shipmondo/settings'));
-	}
+    public function getPluginName()
+    {
+        return 'Shipmondo';
+    }
 
-	// Protected Methods
-	// =========================================================================
+    public function getSettingsResponse(): mixed
+    {
+        return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('shipmondo/settings'));
+    }
 
-	protected function createSettingsModel(): ?BaseModel
-	{
-		return new Settings();
-	}
+    // Protected Methods
+    // =========================================================================
 
-	protected function _registerGlobalEvents()
-	{
-		Event::on(OrderHistories::class, OrderHistories::EVENT_ORDER_STATUS_CHANGE, [$this->getOrders(), 'addSyncJob']);
-	}
+    protected function createSettingsModel(): ?BaseModel
+    {
+        return new Settings();
+    }
 
-	protected function _registerCpEvents()
-	{
-		//Add shipmondo settings to shippingmethod
-		Craft::$app->view->hook('cp.commerce.shippingMethods.edit.content', function (&$context) {
-			$shippingMethod = $context['shippingMethod'];
-			$webshipper = $this->getShipmondoApi();
-			$context['shipmondoTemplateId'] = $shippingMethod->getShipmondoTemplateId();
-			$shipmondoTemplates = $webshipper->getShipmentTemplates()->getOutput();
+    protected function _registerGlobalEvents()
+    {
+        Event::on(OrderHistories::class, OrderHistories::EVENT_ORDER_STATUS_CHANGE, [$this->getOrders(), 'handleStatusChange']);
 
-			$templates = [
-				null => '---'
-			];
+        Event::on(Order::class, Order::EVENT_AFTER_SAVE, [$this->getOrders(), 'handleOrderSave']);
+    }
 
-			foreach ($shipmondoTemplates as $template) {
-				$templates[$template['id']] = $template['name'];
-			}
+    protected function _registerCpEvents()
+    {
+        //Add shipmondo settings to shippingmethod
+        Craft::$app->view->hook('cp.commerce.shippingMethods.edit.content', function (&$context) {
+            $shippingMethod = $context['shippingMethod'];
 
-			$context['shipmondoTemplates'] = $templates;
-			return Craft::$app->view->renderTemplate('commerce-shipmondo/shippingmethod/edit', $context);
-		});
+            $shipmondo = $this->getShipmondoApi();
+            $context['shipmondoTemplateId'] = $shippingMethod->getShipmondoTemplateId();
+            $shipmondoTemplates = $shipmondo->getShipmentTemplates()->getOutput();
 
-		//Add shipmondo details on orderpage
-		Craft::$app->getView()->hook('cp.commerce.order.edit.details', function (array &$context) {
-			/** @var Order $order */
-			$order = $context['order'];
-			// $status = $this->orderSync->getOrderSyncStatusByOrderId($order->getId());
-			$status = false;
+            $templates = [
+                null => '---'
+            ];
 
-			return Craft::$app->getView()->renderTemplate('commerce-shipmondo/order/order-details-panel', [
-				'plugin' => $this,
-				'order' => $order,
-				'status' => $status,
-			]);
-		});
-	}
+            foreach ($shipmondoTemplates as $template) {
+                $templates[$template['id']] = $template['name'];
+            }
 
-	protected function _defineBehaviors(): void
-	{
-		/**
-		 * Order element behaviours
-		 */
-		Event::on(
-			Order::class,
-			Order::EVENT_DEFINE_BEHAVIORS,
-			function (DefineBehaviorsEvent $e) {
-				$e->behaviors['commerce-shipmondo.attributes'] = OrderBehavior::class;
-			}
-		);
+            $context['shipmondoTemplates'] = $templates;
 
-		Event::on(
-			OrderQuery::class,
-			OrderQuery::EVENT_DEFINE_BEHAVIORS,
-			function (DefineBehaviorsEvent $e) {
-				$e->behaviors['commerce-shipmondo.queryparams'] = OrderQueryBehavior::class;
-			}
-		);
+            $context['useOwnAgreement'] = $shippingMethod->getUseOwnAgreement();
 
-		/**
-		 * Shippingmethod element behavoiours
-		 */
-		Event::on(
-			ShippingMethod::class,
-			ShippingMethod::EVENT_DEFINE_BEHAVIORS,
-			function (DefineBehaviorsEvent $e) {
-				$e->behaviors['commerce-shipmondo.attributes'] = ShippingMethodBehavior::class;
-			}
-		);
-	}
+            return Craft::$app->view->renderTemplate('commerce-shipmondo/shippingmethod/edit', $context);
+        });
+
+        //Add shipmondo details on orderpage
+        Craft::$app->getView()->hook('cp.commerce.order.edit.details', function (array &$context) {
+            /** @var Order $order */
+            $order = $context['order'];
+            // $status = $this->orderSync->getOrderSyncStatusByOrderId($order->getId());
+            $status = false;
+
+            return Craft::$app->getView()->renderTemplate('commerce-shipmondo/order/order-details-panel', [
+                'plugin' => $this,
+                'order' => $order,
+                'status' => $status,
+            ]);
+        });
+    }
+
+    protected function _defineBehaviors(): void
+    {
+        /**
+         * Order element behaviours
+         */
+        Event::on(
+            Order::class,
+            Order::EVENT_DEFINE_BEHAVIORS,
+            function (DefineBehaviorsEvent $e) {
+                $e->behaviors['commerce-shipmondo.attributes'] = OrderBehavior::class;
+            }
+        );
+
+        Event::on(
+            OrderQuery::class,
+            OrderQuery::EVENT_DEFINE_BEHAVIORS,
+            function (DefineBehaviorsEvent $e) {
+                $e->behaviors['commerce-shipmondo.queryparams'] = OrderQueryBehavior::class;
+            }
+        );
+
+        /**
+         * Shippingmethod element behavoiours
+         */
+        Event::on(
+            ShippingMethod::class,
+            ShippingMethod::EVENT_DEFINE_BEHAVIORS,
+            function (DefineBehaviorsEvent $e) {
+                $e->behaviors['commerce-shipmondo.attributes'] = ShippingMethodBehavior::class;
+            }
+        );
+    }
 }

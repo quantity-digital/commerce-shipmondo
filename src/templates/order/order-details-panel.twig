@@ -6,6 +6,7 @@
 				{% set info = [] %}
 
 				{% if order.servicePointSnapshot %}
+
 					{% set snapshot = order.servicePointSnapshot|json_decode %}
 
 					{% set info = [

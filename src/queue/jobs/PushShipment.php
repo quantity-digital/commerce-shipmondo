@@ -9,9 +9,10 @@ use Exception;
 use QD\commerce\shipmondo\Shipmondo;
 use yii\queue\RetryableJobInterface;
 
-class PushOrder extends BaseJob implements RetryableJobInterface
+class PushShipment extends BaseJob implements RetryableJobInterface
 {
     public int $orderId;
+    public $settings;
 
     /**
      * Defines how long a single run of the queue can take
@@ -32,32 +33,35 @@ class PushOrder extends BaseJob implements RetryableJobInterface
      */
     public function canRetry($attempt, $error)
     {
+        // We have retried 5 times, so we throw an exception to keep the job in the queue and to help us debug the issue
         return $attempt < 5;
     }
+
 
     public function execute($queue): void
     {
         $this->setProgress($queue, 0.1);
-        // Get the order based on the orderId
+
+        //Find order
         $order = Order::find()->id($this->orderId)->status(null)->one();
 
         $this->setProgress($queue, 0.2);
 
-        // No order found in craft, return and end the job
+        //No order exists, so we return and end queue job
         if (!$order) {
             return;
         }
 
         $this->setProgress($queue, 0.3);
 
-        // Push the order to Shipmondo
-        $push = Shipmondo::getInstance()->getOrders()->pushOrder($order);
+        //Push shipment to Shipmondo
+        $push = Shipmondo::getInstance()->getShipment()->pushShipment($order, $this->settings);
 
         $this->setProgress($queue, 0.4);
 
-        //Push failed, throw exception to allow retry
+        //Push failed, so we throw exception to trigger retry after 300 seconds
         if (!$push) {
-            throw new Exception('Could not push order #' . $this->orderId . ' to Shipmondo');
+            throw new Exception('Could not push shipment #' . $this->orderId . ' to Shipmondo');
         }
 
         $this->setProgress($queue, 1);
@@ -65,6 +69,6 @@ class PushOrder extends BaseJob implements RetryableJobInterface
 
     protected function defaultDescription(): ?string
     {
-        return 'Syncing order #' . $this->orderId . ' to Shipmondo';
+        return 'Syncing shipment #' . $this->orderId . ' to Shipmondo';
     }
 }

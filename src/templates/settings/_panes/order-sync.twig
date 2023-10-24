@@ -3,19 +3,36 @@
 <div id="order-sync" class="hidden flex-fields">
 	{{ adminChangesWarning }}
 
-	{{ forms.multiselectField({
-		label:        "Push orders to Shipmondo"|t('commerce-shipmondo'),
-		instructions: "Orders with these statuses will be pushed automatically to Shipmondo."|t('commerce-shipmondo'),
-		id:           'orderStatusesToPush',
-		name:         'orderStatusesToPush',
-		options:      settings.getOrderStatuses(),
-		values:       settings.orderStatusesToPush,
-		errors:       settings.getErrors('orderStatusesToPush'),
-		class: 'selectize fullwidth',
-		disabled:     not allowAdminChanges,
-		warning: macros.configWarning('orderStatusesToPush', 'commerce-shipmondo'),
-		readonly: macros.readOnly('orderStatusesToPush', 'commerce-shipmondo'),
-	}) }}
+	<div class="width-50">
+    {{ forms.multiselectField({
+      label:        "Push orders to Shipmondo"|t('commerce-shipmondo'),
+      instructions: "Orders with these statuses will be pushed automatically to Shipmondo."|t('commerce-shipmondo'),
+      id:           'orderStatusesToPush',
+      name:         'orderStatusesToPush',
+      options:      settings.getOrderStatuses(),
+      values:       settings.orderStatusesToPush,
+      errors:       settings.getErrors('orderStatusesToPush'),
+      class: 'selectize fullwidth',
+      disabled:     not allowAdminChanges,
+      warning: macros.configWarning('orderStatusesToPush', 'commerce-shipmondo'),
+      readonly: macros.readOnly('orderStatusesToPush', 'commerce-shipmondo'),
+	  }) }}
+  </div>
+  <div class="width-50">
+    {{ forms.multiselectField({
+      label:        "Keep in sync"|t('commerce-shipmondo'),
+      instructions: "Orders with these statuses will be kept in change in Shipmondo."|t('commerce-shipmondo'),
+      id:           'orderStatusesToUpdate',
+      name:         'orderStatusesToUpdate',
+      options:      settings.getOrderStatuses(),
+      values:       settings.orderStatusesToUpdate,
+      errors:       settings.getErrors('orderStatusesToUpdate'),
+      class: 'selectize fullwidth',
+      disabled:     not allowAdminChanges,
+      warning: macros.configWarning('orderStatusesToUpdate', 'commerce-shipmondo'),
+      readonly: macros.readOnly('orderStatusesToUpdate', 'commerce-shipmondo'),
+    }) }}
+  </div>
 
 	{{ forms.editableTableField({
 		label: 'Automatic Craft order status updates'|t('commerce-shipmondo'),

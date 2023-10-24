@@ -59,6 +59,19 @@
 		warning: macros.configWarning('itemImageUrlHandle', 'commerce-shipmondo'),
 	}) }}
 
+	{{ forms.selectField({
+		label:        "Product image mapping"|t('commerce-sendcloud'),
+		instructions: "Select the field containing the product image. "|t('commerce-shipmondo'),
+		id:           'itemProductImageUrlHandle',
+		name:         'itemProductImageUrlHandle',
+		options:      settings.getAvailableTextFields(),
+		value:        settings.itemImageUrlHandle,
+		errors:       settings.getErrors('itemProductImageUrlHandle'),
+		disabled:     not allowAdminChanges,
+		fieldClass: "width-25",
+		warning: macros.configWarning('itemProductImageUrlHandle', 'commerce-shipmondo'),
+	}) }}
+
 	<h2>{{ "Address"|t('commerce-shipmondo') }}</h2>
 
 	{{ forms.selectField({

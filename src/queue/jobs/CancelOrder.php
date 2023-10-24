@@ -2,14 +2,16 @@
 
 namespace QD\commerce\shipmondo\queue\jobs;
 
+use Craft;
 use craft\commerce\elements\Order;
+use craft\commerce\Plugin;
 use craft\helpers\Queue;
 use craft\queue\BaseJob;
 use Exception;
 use QD\commerce\shipmondo\Shipmondo;
 use yii\queue\RetryableJobInterface;
 
-class PushOrder extends BaseJob implements RetryableJobInterface
+class CancelOrder extends BaseJob implements RetryableJobInterface
 {
     public int $orderId;
 
@@ -32,39 +34,34 @@ class PushOrder extends BaseJob implements RetryableJobInterface
      */
     public function canRetry($attempt, $error)
     {
+        // We have retried 5 times, so we throw an exception to keep the job in the queue and to help us debug the issue
         return $attempt < 5;
     }
 
     public function execute($queue): void
     {
         $this->setProgress($queue, 0.1);
+
         // Get the order based on the orderId
         $order = Order::find()->id($this->orderId)->status(null)->one();
 
-        $this->setProgress($queue, 0.2);
+        //Get the cancelled status from craft based on the handle. We use this to validate that the order is cancelled in craft
+        $cancelledStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusByHandle('cancelled');
 
-        // No order found in craft, return and end the job
-        if (!$order) {
+        // If the order is not in Shipmondo or the order is not cancelled in craft, we return
+        if (!$order->shipmondoId || $cancelledStatus->id != $order->orderStatusId) {
             return;
         }
 
-        $this->setProgress($queue, 0.3);
+        // Cancel the order in Shipmondo
+        Shipmondo::getInstance()->getShipmondoApi()->cancelSalesOrder($order->shipmondoId);
 
-        // Push the order to Shipmondo
-        $push = Shipmondo::getInstance()->getOrders()->pushOrder($order);
-
-        $this->setProgress($queue, 0.4);
-
-        //Push failed, throw exception to allow retry
-        if (!$push) {
-            throw new Exception('Could not push order #' . $this->orderId . ' to Shipmondo');
-        }
-
+        // Set the progress to 100%
         $this->setProgress($queue, 1);
     }
 
     protected function defaultDescription(): ?string
     {
-        return 'Syncing order #' . $this->orderId . ' to Shipmondo';
+        return 'Cancel order #' . $this->orderId . ' in Shipmondo';
     }
 }

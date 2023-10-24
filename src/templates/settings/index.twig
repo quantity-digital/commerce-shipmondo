@@ -50,7 +50,7 @@
 
 	<script>
 		{% js %}
-$('#settings-orderStatusesToPush, #settings-orderStatusesToCreateLabel').selectize({plugins: ['remove_button'], dropdownParent: 'body'});
+$('#settings-orderStatusesToPush, #settings-orderStatusesToCreateLabel, #settings-orderStatusesToUpdate').selectize({plugins: ['remove_button'], dropdownParent: 'body'});
 
 var loadingLabel = $(this).find('.integration-loading');
 var shippingMethodsTable = $('#settings-shippingMethods tbody');
@@ -62,7 +62,6 @@ updateShippingMethodTable(data);
 });
 
 var updateShippingMethodTable = function (data) {
-console.log(data)
 shippingMethodsTable.empty();
 
 for (var i in data.shippingMethods) {
