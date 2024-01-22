@@ -45,11 +45,10 @@ class CancelOrder extends BaseJob implements RetryableJobInterface
         // Get the order based on the orderId
         $order = Order::find()->id($this->orderId)->status(null)->one();
 
-        //Get the cancelled status from craft based on the handle. We use this to validate that the order is cancelled in craft
-        $cancelledStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusByHandle('cancelled');
+        $cancelledStatus = Shipmondo::getInstance()->getStatusService()->getOrderStatusByShipmondoHandle('cancelled');
 
         // If the order is not in Shipmondo or the order is not cancelled in craft, we return
-        if (!$order->shipmondoId || $cancelledStatus->id != $order->orderStatusId) {
+        if (!$cancelledStatus || !$order->shipmondoId || $cancelledStatus->id != $order->orderStatusId) {
             return;
         }
 

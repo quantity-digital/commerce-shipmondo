@@ -23,17 +23,18 @@ use DateTime;
 use Exception;
 use QD\commerce\shipmondo\events\ConvertOrder;
 use QD\commerce\shipmondo\events\SetOrderLines;
+use QD\commerce\shipmondo\events\SetShippingAddress;
 use QD\commerce\shipmondo\queue\jobs\CancelOrder;
 use QD\commerce\shipmondo\queue\jobs\PushOrder;
 use QD\commerce\shipmondo\queue\jobs\UpdateOrder;
 use QD\commerce\shipmondo\Shipmondo;
-use verbb\giftvoucher\elements\Voucher;
 
 class Orders extends Component
 {
     const EVENT_AFTER_CONVERT_ORDER = 'afterConvertOrder';
     const EVENT_AFTER_CREATE_LINES = 'afterCreateOrderLines';
     const EVENT_BEFORE_CONVERT_ORDER = 'beforeConvertOrder';
+    const EVENT_BEFORE_SET_SHIPPING_ADDRESS = 'beforeSetShippingAddress';
 
     protected $pluginSettings;
 
@@ -66,7 +67,7 @@ class Orders extends Component
 
             "ship_to" => $this->setShipTo($order),
             // "bill_to" => $this->setBillTo($order),
-            "sender" => $this->setSender($order),
+            "sender" => $this->setSender(),
             "payment_details" => $this->setPaymentDetails($order),
             "service_point" => $this->setServicePoint($order),
             "order_lines" => $this->setOrderLines($order, isset($salesOrder['order_lines']) ? $salesOrder['order_lines'] : [])
@@ -160,8 +161,7 @@ class Orders extends Component
             return;
         }
 
-        //Order has status that should be cancelled in Shipmondo. Return after, as no other actions should be taken.
-        $cancelledStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusByHandle('cancelled');
+        $cancelledStatus = Shipmondo::getInstance()->getStatusService()->getOrderStatusByShipmondoHandle('cancelled');
         if ($cancelledStatus && $cancelledStatus->id == $newOrderStatusId) {
             $this->cancelOrder($order);
             return;
@@ -304,6 +304,18 @@ class Orders extends Component
         //Get name and attention from address to be used in the address array
         $receiver = $this->getNameAndAttention($address);
 
+        // Add event to modify the shipping address
+        $event = new SetShippingAddress([
+            'order' => $order,
+            'address' => $address,
+            'receiver' => $receiver,
+        ]);
+        $this->trigger(self::EVENT_BEFORE_SET_SHIPPING_ADDRESS, $event);
+
+        // Update address to use the event address & receiver
+        $address = $event->address;
+        $receiver = $event->receiver;
+
         //Return address array
         return [
             "name" => $receiver['name'],
@@ -363,11 +375,9 @@ class Orders extends Component
     /**
      * Convert sender address to Shipmondo sender array
      *
-     * @param [type] $order
-     *
      * @return array
      */
-    protected function setSender($order): array
+    protected function setSender(): array
     {
         //Get sender name and email from settings
         $craftMailSettings = App::mailSettings();
@@ -413,7 +423,7 @@ class Orders extends Component
     {
         return [
             "amount_including_vat" => $order->total,
-            "currency_code" => $order->paymentCurrency,
+            "currency_code" => $order->currency,
             "vat_amount" => $order->storedTotalTax ?: $order->storedTotalTaxIncluded,
         ];
     }
@@ -513,7 +523,7 @@ class Orders extends Component
             foreach ($lineItems as $key => $lineItem) {
 
                 //Get line item snapshot
-                $snapShot = \is_string($lineItem->snapshot) ? Json::decode($lineItem->snapshot) : $lineItem->snapshot;
+                $snapshot = \is_string($lineItem->snapshot) ? Json::decode($lineItem->snapshot) : $lineItem->snapshot;
 
                 //Get ex vat price and ex vat unit price
                 $exVatPrice = $lineItem->total - $lineItem->tax;
@@ -531,11 +541,11 @@ class Orders extends Component
                 //Set order line data
                 $data = [
                     "line_type" => "item",
-                    "item_name" => $snapShot['description'],
-                    "item_sku" => $snapShot['sku'],
+                    "item_name" => $snapshot['description'],
+                    "item_sku" => $snapshot['sku'],
                     "quantity" => $lineItem->qty,
                     "unit_price_excluding_vat" => $exVatUnitPrice,
-                    "currency_code" => $order->paymentCurrency,
+                    "currency_code" => $order->currency,
                     "unit_weight" => $unitsService->convertToGram($lineItem->weight, $weightUnits),
                     "item_barcode" => $barcode,
                     "item_bin" => $bin,
@@ -544,7 +554,7 @@ class Orders extends Component
 
                 //If we have saleorder lines, this means it's a update to saleorder and we need to set the id of the order line, else Shipmondo will create a new order line
                 if ($saleOrderLines) {
-                    $index = array_search($snapShot['sku'], array_column($saleOrderLines, "item_sku"));
+                    $index = array_search($snapshot['sku'], array_column($saleOrderLines, "item_sku"));
 
                     if ($index !== false) {
                         $data['id'] = $saleOrderLines[$index]['id'];

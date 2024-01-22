@@ -22,26 +22,9 @@ class ServicesController extends Controller
      */
     public function actionListServicePoints(): Response
     {
-        //Get active cart
-        $order = Commerce::getInstance()->getCarts()->getCart();
+        $params = $this->request->getQueryParams();
 
         //Pass order to service points service, which will return service points as array
-        return $this->asJson(Shipmondo::getInstance()->getServicePoints()->getServicePointsForOrder($order));
-    }
-
-    /**
-     * Return servicepoints based on the carrier, destination country and postal code
-     *
-     * @return \yii\web\Response
-     */
-    public function actionListServicePointsByParams(): Response
-    {
-        $params = [
-            'carrier_code' => $this->request->getParam('carrierCode'),
-            'country_code' => $this->request->getParam('countryCode'),
-            'zipcode' => $this->request->getParam('postalCode'),
-        ];
-
-        return $this->asJson(Shipmondo::getInstance()->getServicePoints()->getServicePointsByParams($params, 20));
+        return $this->asJson(Shipmondo::getInstance()->getServicePoints()->getServicePoints($params));
     }
 }

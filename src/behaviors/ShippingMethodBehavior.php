@@ -16,7 +16,6 @@ class ShippingMethodBehavior extends Behavior
      */
     public $templateId = null;
     public $carrierCode = null;
-    public $useOwnAgreement = null;
     public $productCode = null;
     public $requireServicePoint = null;
     public $requiredFields = null;
@@ -38,17 +37,6 @@ class ShippingMethodBehavior extends Behavior
         return [
             ShippingMethod::EVENT_DEFINE_EXTRA_FIELDS => [$this, 'saveShippingInfo'],
         ];
-    }
-
-    public function getUseOwnAgreement()
-    {
-        // If not set, get database and populate the object
-        if ($this->useOwnAgreement == null) {
-            $this->getShipmondoData();
-        }
-
-        //Return the value
-        return $this->useOwnAgreement;
     }
 
     public function getShipmondoTemplateId()
@@ -116,9 +104,6 @@ class ShippingMethodBehavior extends Behavior
         //Set carrierCode from database record
         $this->carrierCode = isset($row['carrierCode']) ? $row['carrierCode'] : null;
 
-        //Set useOwnAgreement from database record
-        $this->useOwnAgreement = isset($row['useOwnAgreement']) ? $row['useOwnAgreement'] : null;
-
         //Set productCode from database record
         $this->productCode = isset($row['productCode']) ? $row['productCode'] : null;
 
@@ -133,7 +118,6 @@ class ShippingMethodBehavior extends Behavior
     {
         $request = Craft::$app->getRequest();
         $this->templateId = $request->getParam('shipmondoTemplateId');
-        $this->useOwnAgreement = $request->getParam('useOwnAgreement');
 
         // Return if no templateId is set
         if (!$this->templateId) {
@@ -168,7 +152,6 @@ class ShippingMethodBehavior extends Behavior
                 'carrierCode' => $carrierCode,
                 'carrierName' => $carrierName,
                 'productCode' => $template['product_code'],
-                'useOwnAgreement' => $this->useOwnAgreement,
                 'requireServicePoint' => $requireServicePoint,
                 'requiredFields' => $requiredFields
             ])

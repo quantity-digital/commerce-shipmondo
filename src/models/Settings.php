@@ -5,20 +5,10 @@ namespace QD\commerce\shipmondo\models;
 use Craft;
 use craft\base\Model;
 use craft\commerce\Plugin as Commerce;
+use QD\commerce\shipmondo\plugin\Data;
 
 class Settings extends Model
 {
-    // public $hasCpSection = false;
-    // public $enableCaching = true;
-    // public $displayDebug = false;
-    // public $displayErrors = false;
-    // public $fulfilledStatus;
-    // public $partiallyFulfilledStatus;
-    // public $accountName;
-    // public $secretToken;
-    // public $webhookSecret;
-    // public $channelId;
-
     public string $apiUser = '';
     public string $apiKey = '';
     public string $webhookKey = '';
@@ -67,23 +57,17 @@ class Settings extends Model
     public function getShipmondoStatuses(): array
     {
         return [
-            'open' => 'Open',
-            'processing' => 'Processing',
-            'packed' => 'Packed',
-            'cancelled' => 'Cancelled',
-            'on_hold' => 'On hold',
-            'sent' => 'Sent',
-            'picked_up' => 'Picked up',
-            'archived' => 'Archived',
-            'ready_for_pickup' => 'Ready for pickup',
-            'released' => 'Released'
+            Data::STATUS_OPEN => 'Open',
+            Data::STATUS_PROCESSING => 'Processing',
+            Data::STATUS_PACKED => 'Packed',
+            Data::STATUS_CANCELLED => 'Cancelled',
+            Data::STATUS_ON_HOLD => 'On hold',
+            Data::STATUS_SENT => 'Sent',
+            Data::STATUS_PICKED_UP => 'Picked up',
+            Data::STATUS_ARCHIVED => 'Archived',
+            Data::STATUS_READY_FOR_PICKUP => 'Ready for pickup',
+            Data::STATUS_RELEASED => 'Released'
         ];
-        // $options = [];
-        // foreach (OrderSyncStatus::STATUSES as $value => $label) {
-        // 	$options[] = ['value' => $value, 'label' => sprintf('%d: %s', $value, $label)];
-        // }
-
-        // return $options;
     }
 
     /**

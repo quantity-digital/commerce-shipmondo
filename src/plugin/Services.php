@@ -7,6 +7,7 @@ use QD\commerce\shipmondo\services\Orders;
 use QD\commerce\shipmondo\services\ServicePoints;
 use QD\commerce\shipmondo\services\ShipmentService;
 use QD\commerce\shipmondo\services\ShipmondoApi;
+use QD\commerce\shipmondo\services\StatusService;
 use QD\commerce\shipmondo\services\Units;
 use QD\commerce\shipmondo\services\Webhooks;
 
@@ -26,7 +27,8 @@ trait Services
             'shipment' => ShipmentService::class,
             'orderInfos' => OrderInfos::class,
             'units' => Units::class,
-            'servicePoints' => ServicePoints::class
+            'servicePoints' => ServicePoints::class,
+            'status' => StatusService::class,
         ]);
     }
 
@@ -90,8 +92,23 @@ trait Services
         return $this->get('units');
     }
 
+    /**
+     * Returns Service Points Service
+     *
+     * @return ServicePoints
+     */
     public function getServicePoints(): ServicePoints
     {
         return $this->get('servicePoints');
+    }
+
+    /**
+     * Returns Status Service
+     *
+     * @return StatusService
+     */
+    public function getStatusService(): StatusService
+    {
+        return $this->get('status');
     }
 }

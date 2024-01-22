@@ -139,8 +139,6 @@ class Shipmondo extends BasePlugin
 
             $context['shipmondoTemplates'] = $templates;
 
-            $context['useOwnAgreement'] = $shippingMethod->getUseOwnAgreement();
-
             return Craft::$app->view->renderTemplate('commerce-shipmondo/shippingmethod/edit', $context);
         });
 

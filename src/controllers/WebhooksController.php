@@ -30,6 +30,20 @@ class WebhooksController extends Controller
 
     public function actionOrderUpdateStatus()
     {
+        //? Shipmondo Statuses
+        /**
+         * open
+         * processing
+         * packed
+         * cancelled
+         * on_hold
+         * sent
+         * picked_up
+         * archived
+         * ready_for_pickup
+         * released
+         */
+
         //Get token from request
         $request = Craft::$app->getRequest();
         $bodyParams = $request->getBodyParams();
@@ -79,34 +93,6 @@ class WebhooksController extends Controller
             throw new Exception('Order with reference ' . $orderReference . ' not found.');
         }
 
-        //Check for mapping of order status
-        $settings = Shipmondo::getInstance()->getSettings();
-        if ($settings->canChangeOrderStatus()) {
-            foreach ($settings->orderStatusMapping as $mapping) {
-
-                //Check if mapping matches Shipmondo status
-                if ($mapping['shipmondo'] == $shipmondoStatus) {
-                    $orderStatus = Commerce::getInstance()->getOrderStatuses()->getOrderStatusByHandle($mapping['craft']);
-
-                    //Check if order status exists
-                    if (!$orderStatus) {
-                        throw new \Exception("Order status '{$mapping['craft']}' not found in Craft.");
-                    }
-
-                    //Update order status
-                    $order->orderStatusId = $orderStatus->id;
-                    $order->message = \Craft::t('commerce-shipmondo', "[Shipmondo] Status updated via webhook ({status})", ['status' => $shipmondoStatus]);
-                    $save = Craft::$app->getElements()->saveElement($order);
-
-                    //Check if order status was saved
-                    if (!$save) {
-                        throw new \Exception("Could not save order status");
-                    }
-
-                    //Return as success
-                    break;
-                }
-            }
-        }
+        return Shipmondo::getInstance()->getStatusService()->changeOrderStatusFromShipmondoHandle($order, $shipmondoStatus);
     }
 }

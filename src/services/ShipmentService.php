@@ -58,7 +58,7 @@ class ShipmentService extends Component
 
         $data = [
             'test_mode' => App::devMode(),
-            'own_agreement' => $shippingMethod->getUseOwnAgreement() ? true : false,
+            'own_agreement' => true,
             'product_code' => $shippingMethod->getProductCode(),
 
             'contents' => isset($settings['contents']) ? $settings['contents'] : false,

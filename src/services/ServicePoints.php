@@ -4,27 +4,47 @@ namespace QD\commerce\shipmondo\services;
 
 use craft\base\Component;
 use craft\commerce\elements\Order;
-use Exception;
 use QD\commerce\shipmondo\Shipmondo;
+use craft\commerce\Plugin as Commerce;
+use Exception;
 
 class ServicePoints extends Component
 {
+    public function getServicePoints(array $queryParams): array
+    {
+        $includeAddress = $queryParams['includeAddress'] ?? false;
+        $quantity = $queryParams['quantity'] ?? 20;
+
+        if (!$this->_hasRequiredParams($queryParams)) {
+            $order = Commerce::getInstance()->getCarts()->getCart();
+            $params = $this->getServicePointParamsFromOrder($order, $includeAddress, $quantity);
+            return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
+        }
+
+        if (!$this->_validateRequiredParams($queryParams)) {
+            throw new Exception("A value is missing from required params", 1);
+        }
+
+        $params = $this->getServicePointParamsFromQuery($queryParams, $includeAddress, $quantity);
+
+        //Pass order to service points service, which will return service points as array
+        return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
+    }
+
+
     /**
-     * Get service points from order address
+     * Get available service points from order data
      *
-     * @param \craft\commerce\elements\Order $order
+     * @param Order $order
      * @param boolean $includeAddress
      * @param integer $quantity
-     *
      * @return array
      */
-    public function getServicePointsForOrder(Order $order, $includeAddress = false, $quantity = 20): array
+    public function getServicePointParamsFromOrder(Order $order, bool $includeAddress, int $quantity): array
     {
-        //Get carrier code and shipping address
         $carrierCode = $order->getShippingMethod()->getCarrierCode();
         $shippingAddress = $order->getShippingAddress();
 
-        //Create search array for the servicepoints.
         $params = [
             'carrier_code' => $carrierCode,
             'country_code' => $shippingAddress->countryCode,
@@ -32,39 +52,48 @@ class ServicePoints extends Component
             'quantity' => $quantity
         ];
 
-        //Add address to search array if needed. This will give a more precise result.
         if ($includeAddress) {
             $params['address'] = $shippingAddress->addressLine1;
             $params['city'] = $shippingAddress->city;
         }
 
-        return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
+        return $params;
     }
 
     /**
-     * Get service points from custom search array
+     * Get available service points from query params
      *
      * @param array $params
+     * @param boolean $includeAddress
      * @param integer $quantity
-     *
      * @return array
      */
-    public function getServicePointsByParams(array $params, int $quantity = 20): array
+    public function getServicePointParamsFromQuery(array $params, bool $includeAddress, int $quantity): array
     {
-        //Set numver of service points to return
-        $params['quantity'] = $quantity;
-        return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
+        $params = [
+            'carrier_code' => $params['carrierCode'],
+            'country_code' => $params['countryCode'],
+            'zipcode' => $params['postalCode'],
+            'quantity' => $quantity
+        ];
+
+        if ($includeAddress && $this->_hasAddressParams($params)) {
+            $params['address'] = $params['address'];
+            $params['city'] = $params['city'];
+        }
+
+        return $params;
     }
 
     /**
      * Get service point by id
      *
-     * @param [type] $id
+     * @param int|string $id
      * @param \craft\commerce\elements\Order $order
      *
      * @return array
      */
-    public function getServicePointById($id, Order $order): array
+    public function getServicePointById(int|string $id, Order $order): array
     {
         $carrierCode = $order->getShippingMethod()->getCarrierCode();
         $shippingAddress = $order->getShippingAddress();
@@ -78,23 +107,62 @@ class ServicePoints extends Component
         return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
     }
 
-    /**
-     * Get service point by carriercode and countrycode
-     *
-     * @param [type] $id
-     * @param [type] $carrierCode
-     * @param [type] $countryCode
-     *
-     * @return array
-     */
-    public function getServicePointByData($id, $carrierCode, $countryCode): array
-    {
-        $params = [
-            'carrier_code' => $carrierCode,
-            'country_code' => $countryCode,
-            'id' => $id,
-        ];
+    //* PRIVATE
 
-        return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
+    /**
+     * Check if required params are present
+     *
+     * @param array $params
+     * @return boolean
+     */
+    private function _hasRequiredParams(array $params): bool
+    {
+        $requiredParams = ['carrier_code', 'country_code', 'zipcode'];
+
+        foreach ($requiredParams as $requiredParam) {
+            if (!array_key_exists($requiredParam, $params)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate if required params have a value
+     *
+     * @param array $params
+     * @return boolean
+     */
+    private function _validateRequiredParams(array $params): bool
+    {
+        $requiredParams = ['carrier_code', 'country_code', 'zipcode'];
+
+        foreach ($requiredParams as $requiredParam) {
+            if (!isset($params[$requiredParam]) || !$params[$requiredParam]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if address params are present
+     *
+     * @param array $params
+     * @return bool
+     */
+    private function _hasAddressParams(array $params): bool
+    {
+        $requiredParams = ['address', 'city'];
+
+        foreach ($requiredParams as $requiredParam) {
+            if (!array_key_exists($requiredParam, $params)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

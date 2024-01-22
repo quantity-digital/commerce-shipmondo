@@ -14,7 +14,6 @@ trait Routes
         Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_SITE_URL_RULES, function (RegisterUrlRulesEvent $event) {
             //Services
             $event->rules['shipmondo/services/list-service-points'] = 'commerce-shipmondo/services/list-service-points';
-            $event->rules['shipmondo/services/list-service-points-by-params'] = 'commerce-shipmondo/services/list-service-points-by-params';
 
             //Webhooks
             $event->rules['shipmondo/webhook/order/status'] = 'commerce-shipmondo/webhooks/order-update-status';

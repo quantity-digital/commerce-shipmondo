@@ -14,15 +14,4 @@
     required: true
   }) }}
   </div>
-  <div class="field width-50">
-  {{ forms.lightswitchField({
-      label: "Use own agreement"|t,
-      id: 'useOwnAgreement',
-      name: 'useOwnAgreement',
-      instructions: "If checked, shipments will use own agreement",
-      value: 1,
-      on: useOwnAgreement,
-      errors: shippingMethod.getErrors('useOwnAgreement')
-    }) }}
-  </div>
 </div>

@@ -109,7 +109,7 @@ class ShipmondoApi extends Component
     public function getOutput()
     {
         if (!isset($this->result['output'])) {
-            exit('test');
+            exit('No output from API call');
         }
         return $this->result['output'];
     }
