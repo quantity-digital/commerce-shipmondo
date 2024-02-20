@@ -71,9 +71,9 @@ class ServicePoints extends Component
     public function getServicePointParamsFromQuery(array $params, bool $includeAddress, int $quantity): array
     {
         $params = [
-            'carrier_code' => $params['carrierCode'],
-            'country_code' => $params['countryCode'],
-            'zipcode' => $params['postalCode'],
+            'carrier_code' => $params['carrier_code'],
+            'country_code' => $params['country_code'],
+            'zipcode' => $params['zipcode'],
             'quantity' => $quantity
         ];
 
