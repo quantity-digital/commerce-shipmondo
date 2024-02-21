@@ -12,12 +12,11 @@ class ServicePoints extends Component
 {
     public function getServicePoints(array $queryParams): array
     {
-        $includeAddress = $queryParams['includeAddress'] ?? false;
         $quantity = $queryParams['quantity'] ?? 20;
 
         if (!$this->_hasRequiredParams($queryParams)) {
             $order = Commerce::getInstance()->getCarts()->getCart();
-            $params = $this->getServicePointParamsFromOrder($order, $includeAddress, $quantity);
+            $params = $this->getServicePointParamsFromOrder($order, $quantity);
             return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
         }
 
@@ -25,7 +24,7 @@ class ServicePoints extends Component
             throw new Exception("A value is missing from required params", 1);
         }
 
-        $params = $this->getServicePointParamsFromQuery($queryParams, $includeAddress, $quantity);
+        $params = $this->getServicePointParamsFromQuery($queryParams, $quantity);
 
         //Pass order to service points service, which will return service points as array
         return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
@@ -40,7 +39,7 @@ class ServicePoints extends Component
      * @param integer $quantity
      * @return array
      */
-    public function getServicePointParamsFromOrder(Order $order, bool $includeAddress, int $quantity): array
+    public function getServicePointParamsFromOrder(Order $order, int $quantity): array
     {
         $carrierCode = $order->getShippingMethod()->getCarrierCode();
         $shippingAddress = $order->getShippingAddress();
@@ -52,9 +51,9 @@ class ServicePoints extends Component
             'quantity' => $quantity
         ];
 
-        if ($includeAddress) {
+        if (isset($shippingAddress->locality) && isset($shippingAddress->addressLine1) && $shippingAddress->locality && $shippingAddress->addressLine1) {
             $params['address'] = $shippingAddress->addressLine1;
-            $params['city'] = $shippingAddress->city;
+            $params['city'] = $shippingAddress->locality;
         }
 
         return $params;
@@ -63,23 +62,23 @@ class ServicePoints extends Component
     /**
      * Get available service points from query params
      *
-     * @param array $params
+     * @param array $queryParams
      * @param boolean $includeAddress
      * @param integer $quantity
      * @return array
      */
-    public function getServicePointParamsFromQuery(array $params, bool $includeAddress, int $quantity): array
+    public function getServicePointParamsFromQuery(array $queryParams, int $quantity): array
     {
         $params = [
-            'carrier_code' => $params['carrier_code'],
-            'country_code' => $params['country_code'],
-            'zipcode' => $params['zipcode'],
+            'carrier_code' => $queryParams['carrier_code'],
+            'country_code' => $queryParams['country_code'],
+            'zipcode' => $queryParams['zipcode'],
             'quantity' => $quantity
         ];
 
-        if ($includeAddress && $this->_hasAddressParams($params)) {
-            $params['address'] = $params['address'];
-            $params['city'] = $params['city'];
+        if ($this->_hasAddressParams($queryParams)) {
+            $params['address'] = $queryParams['address'];
+            $params['city'] = $queryParams['city'];
         }
 
         return $params;
