@@ -6,6 +6,7 @@ use craft\base\Component;
 use craft\commerce\elements\Order;
 use QD\commerce\shipmondo\Shipmondo;
 use craft\commerce\Plugin as Commerce;
+use craft\elements\Address;
 use Exception;
 
 class ServicePoints extends Component
@@ -82,6 +83,31 @@ class ServicePoints extends Component
         }
 
         return $params;
+    }
+
+    /**
+     * Get servicpoints from address
+     *
+     * @param Address $address
+     * @param string $carrierCode
+     * @param integer $quantity
+     * @return array
+     */
+    public function getServicePointByAddress(Address $address, string $carrierCode, int $quantity = 20): array
+    {
+        $params = [
+            'carrier_code' => $carrierCode,
+            'country_code' => $address->countryCode,
+            'zipcode' => $address->postalCode,
+            'quantity' => $quantity
+        ];
+
+        if (isset($address->locality) && isset($address->address1) && $address->locality && $address->address1) {
+            $params['address'] = $address->address1;
+            $params['city'] = $address->locality;
+        }
+
+        return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
     }
 
     /**
