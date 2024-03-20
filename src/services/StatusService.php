@@ -70,7 +70,7 @@ class StatusService extends Component
     $orderStatus = $this->getOrderStatusByShipmondoHandle($shipmondoHandle);
 
     if (!$orderStatus) {
-      throw new \Exception("Order status '{$orderStatus}' not found in Craft.");
+      return;
     }
 
     //Update order status
