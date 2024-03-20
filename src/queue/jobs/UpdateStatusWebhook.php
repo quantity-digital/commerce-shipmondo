@@ -11,7 +11,7 @@ use yii\queue\RetryableJobInterface;
 
 class UpdateStatusWebhook extends BaseJob implements RetryableJobInterface
 {
-  public int $params;
+  public mixed $params;
 
   /**
    * Defines how long a single run of the queue can take
@@ -65,52 +65,52 @@ class UpdateStatusWebhook extends BaseJob implements RetryableJobInterface
     $this->setProgress($queue, 0.3);
     $payload = Shipmondo::getInstance()->getWebhooks()->decodeWebhook($token);
 
-    //If payload data is not in JSON format, try to decode it
+    // Set data
     $this->setProgress($queue, 0.5);
-    $data = is_string($payload['data']) ? Json::decode($payload['data']) : $payload['data'];
+    $action = $payload->action ?? '';
+    $data = is_array($payload->data) ? (object) $payload->data : $payload->data ?? '';
+    $reference = $data->order_id ?? '';
+    $status = $data->order_status ?? '';
 
     //Check if it is a connection test
-    if (isset($payload['action']) && $payload['action'] == 'connection_test') {
-      throw new Exception('Connection test');
+    if ($action == 'connection_test') {
+      return;
     }
 
     //Request doesn't contain a order id, return as failure
-    if (!isset($data['order_id']) || $data['order_id'] == '') {
+    if (!$reference) {
       throw new Exception('No order ID in request');
     }
 
     //Request doesn't contain a order status, return as failure
-    if (!isset($data['order_status']) || $data['order_status'] == '') {
+    if (!$status) {
       throw new Exception('No order status in request');
     }
 
-    //Get order status and reference
-    $shipmondoStatus = $data['order_status'];
-    $orderReference = $data['order_id'];
-
     //Get order
     $this->setProgress($queue, 0.7);
-    $order = Order::find()->reference($orderReference)->one();
+    $order = Order::find()->reference($reference)->one();
 
     //If order is not found and status is cancelled, return as success
-    if (!$order && $shipmondoStatus == 'cancelled') {
+    if (!$order && $status == 'cancelled') {
       return;
     }
 
     //No order found, return as failure
     if (!$order) {
-      throw new Exception('Order with reference ' . $orderReference . ' not found.');
+      throw new Exception('Order with reference ' . $reference . ' not found.');
     }
 
+    // Update order status
     $this->setProgress($queue, 0.9);
-    Shipmondo::getInstance()->getStatusService()->changeOrderStatusFromShipmondoHandle($order, $shipmondoStatus);
+    Shipmondo::getInstance()->getStatusService()->changeOrderStatusFromShipmondoHandle($order, $status);
 
-    $this->setProgress($queue, 1);
+    // Finish queue job
     return;
   }
 
   protected function defaultDescription(): ?string
   {
-    return 'Syncing shipment #' . $this->orderId . ' to Shipmondo';
+    return 'Shipmondo Webhook: Update order status';
   }
 }
