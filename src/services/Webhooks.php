@@ -9,12 +9,8 @@
 namespace QD\commerce\shipmondo\services;
 
 use craft\base\Component;
-use craft\commerce\elements\Order;
 use craft\helpers\Json;
-use Exception;
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-use QD\commerce\shipmondo\helpers\Log;
 use UnexpectedValueException;
 
 class Webhooks extends Component
@@ -25,9 +21,9 @@ class Webhooks extends Component
      *
      * @param string $jwtSting
      *
-     * @return array
+     * @return object
      */
-    public function decodeWebhook(string $jwtSting): array
+    public function decodeWebhook(string $jwtSting): object
     {
         $tks = \explode('.', $jwtSting);
         if (\count($tks) !== 3) {
@@ -35,7 +31,7 @@ class Webhooks extends Component
         }
         list($headb64, $bodyb64, $cryptob64) = $tks;
         $headerRaw = JWT::urlsafeB64Decode($headb64);
-        if (null === ($header = JWT::jsonDecode($headerRaw))) {
+        if (null === JWT::jsonDecode($headerRaw)) {
             throw new UnexpectedValueException('Invalid header encoding');
         }
 
@@ -45,6 +41,11 @@ class Webhooks extends Component
         //If payload is not in JSON format, try to decode it
         if (is_string($payload)) {
             $payload = Json::decode($payload);
+        }
+
+        // If payload is array, convert it to object
+        if (is_array($payload)) {
+            $payload = (object) $payload;
         }
 
         return $payload;

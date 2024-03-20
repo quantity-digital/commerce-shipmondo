@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 4.0.4 - 2024-03-20
+
+Moved webhook handling to queue job
+
 ## 4.0.3 - 2024-02-27
 
 Added get servicepoint from address method
