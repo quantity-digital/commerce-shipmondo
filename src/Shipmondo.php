@@ -54,12 +54,12 @@ class Shipmondo extends BasePlugin
      *
      * @var string
      */
-    public string $schemaVersion = "1.0.2";
+    public $schemaVersion = "1.0.2";
 
     /**
      * @inheritDoc
      */
-    public bool $hasCpSettings = true;
+    public $hasCpSettings = true;
 
     // Public Methods
     // =========================================================================
@@ -99,7 +99,7 @@ class Shipmondo extends BasePlugin
         return 'Shipmondo';
     }
 
-    public function getSettingsResponse(): mixed
+    public function getSettingsResponse()
     {
         return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('shipmondo/settings'));
     }
@@ -138,6 +138,8 @@ class Shipmondo extends BasePlugin
             }
 
             $context['shipmondoTemplates'] = $templates;
+
+            $context['useOwnAgreement'] = $shippingMethod->getUseOwnAgreement();
 
             return Craft::$app->view->renderTemplate('commerce-shipmondo/shippingmethod/edit', $context);
         });

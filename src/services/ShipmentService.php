@@ -142,9 +142,9 @@ class ShipmentService extends Component
         $phoneHandle = $this->pluginSettings->addresPhoneHandle;
 
         // Get sender address from Craft Commerce settings
-        $address = Commerce::getInstance()->getStore()
-            ->getStore()
-            ->getLocationAddress();
+        $address = Commerce::getInstance()
+            ->getAddresses()
+            ->getStoreLocationAddress();
 
         // If no address is set, return empty array
         if (!$address) {
@@ -154,14 +154,14 @@ class ShipmentService extends Component
         return [
             "name" => App::parseEnv($senderName),
             "attention" => ($address->attention) ? $address->attention : '',
-            "address1" => $address->addressLine1,
-            "address2" => $address->addressLine2,
-            "zipcode" => $address->postalCode,
-            "city" => $address->locality,
-            "country_code" => $address->countryCode,
+            "address1" => $address->address1,
+            "address2" => $address->address2,
+            "zipcode" => $address->zipCode,
+            "city" => $address->city,
+            "country_code" => $address->countryIso,
             "mobile" => ($phoneHandle && $address->$phoneHandle) ? $address->$phoneHandle : '',
             "email" => App::parseEnv($senderEmail),
-            "vat_id" => ($address->organizationTaxId) ? $address->organizationTaxId : '',
+            "vat_id" => ($address->businessTaxId) ? $address->businessTaxId : '',
         ];
     }
 
@@ -199,9 +199,9 @@ class ShipmentService extends Component
             "attention" => $receiver['attention'],
             "address1" => $address->addressLine1,
             "address2" => $address->addressLine2,
-            "zipcode" => $address->postalCode,
-            "city" => $address->locality,
-            "country_code" => $address->countryCode,
+            "zipcode" => $address->zipCode,
+            "city" => $address->city,
+            "country_code" => $address->countryIso,
             "email" => $order->email,
             "mobile" => ($phoneHandle && $address->$phoneHandle) ? $address->$phoneHandle : '',
         ];
@@ -298,9 +298,9 @@ class ShipmentService extends Component
     protected function getNameAndAttention(Address $address): array
     {
         //If we have a company name, use that as name and fullname as attention
-        if ($address->organization && strlen($address->organization)) {
+        if ($address->businessName && strlen($address->businessName)) {
             return [
-                'name' => $address->organization,
+                'name' => $address->businessName,
                 'attention' => $this->getFullName($address)
             ];
         }

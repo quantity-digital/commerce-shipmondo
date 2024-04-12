@@ -53,6 +53,11 @@ class Install extends Migration
             'servicePointId' => $this->string()->null(),
             'servicePointSnapshot' => $this->longText()->null(),
             'datePushed' => $this->dateTime(),
+
+            'dateCreated' => $this->dateTime()->notNull(),
+            'dateUpdated' => $this->dateTime()->notNull(),
+            'uid' => $this->uid(),
+
             'PRIMARY KEY([[id]])',
         ]);
 
@@ -62,8 +67,14 @@ class Install extends Migration
             'carrierCode' => $this->string()->null(),
             'carrierName' => $this->string()->null(),
             'productCode' => $this->string()->null(),
+            'useOwnAgreement' => $this->boolean()->defaultValue(false),
             'requireServicePoint' => $this->boolean()->defaultValue(false),
             'requiredFields' => $this->string()->null(),
+
+            'dateCreated' => $this->dateTime()->notNull(),
+            'dateUpdated' => $this->dateTime()->notNull(),
+            'uid' => $this->uid(),
+
             'PRIMARY KEY([[id]])',
         ]);
     }

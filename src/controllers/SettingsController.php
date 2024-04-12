@@ -4,8 +4,6 @@ namespace QD\commerce\shipmondo\controllers;
 
 use Craft;
 use craft\web\Controller;
-
-use craft\commerce\Plugin as Commerce;
 use QD\commerce\shipmondo\Shipmondo;
 use yii\web\Response;
 

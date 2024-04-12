@@ -10,10 +10,7 @@ use yii\web\Response;
 
 class ServicesController extends Controller
 {
-    // Public Methods
-    // =========================================================================
-
-    public  array|int|bool $allowAnonymous = true;
+    public $allowAnonymous = true;
 
     /**
      * Get service points for order

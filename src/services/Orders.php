@@ -14,7 +14,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\events\OrderStatusEvent;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\Plugin;
-use craft\elements\Address;
+use craft\commerce\models\Address;
 use craft\events\ModelEvent;
 use craft\helpers\App;
 use craft\helpers\Json;
@@ -315,16 +315,17 @@ class Orders extends Component
         // Update address to use the event address & receiver
         $address = $event->address;
         $receiver = $event->receiver;
+        $order = $event->order;
 
         //Return address array
         return [
             "name" => $receiver['name'],
             "attention" => $receiver['attention'],
-            "address1" => $address->addressLine1,
-            "address2" => $address->addressLine2,
-            "zipcode" => $address->postalCode,
-            "city" => $address->locality,
-            "country_code" => $address->countryCode,
+            "address1" => $address->address1,
+            "address2" => $address->address2,
+            "zipcode" => $address->zipCode,
+            "city" => $address->city,
+            "country_code" => $address->countryIso,
             "email" => $order->email,
             "mobile" => ($phoneHandle && $address->$phoneHandle) ? $address->$phoneHandle : '',
         ];
@@ -362,11 +363,11 @@ class Orders extends Component
         return [
             "name" => $receiver['name'],
             "attention" => $receiver['attention'],
-            "address1" => $address->addressLine1,
-            "address2" => $address->addressLine2,
-            "zipcode" => $address->postalCode,
-            "city" => $address->locality,
-            "country_code" => $address->countryCode,
+            "address1" => $address->address1,
+            "address2" => $address->address2,
+            "zipcode" => $address->zipCode,
+            "city" => $address->city,
+            "country_code" => $address->countryIso,
             "email" => $order->email,
             "mobile" => ($phoneHandle && $address->$phoneHandle) ? $address->$phoneHandle : '',
         ];
@@ -388,9 +389,9 @@ class Orders extends Component
         $phoneHandle = $this->pluginSettings->addresPhoneHandle;
 
         //Get store address
-        $address = Commerce::getInstance()->getStore()
-            ->getStore()
-            ->getLocationAddress();
+        $address = Commerce::getInstance()
+            ->getAddresses()
+            ->getStoreLocationAddress();
 
         //If no store address is set, return empty array
         if (!$address) {
@@ -401,14 +402,14 @@ class Orders extends Component
         return [
             "name" => App::parseEnv($senderName),
             "attention" => ($address->attention) ? $address->attention : '',
-            "address1" => $address->addressLine1,
-            "address2" => $address->addressLine2,
-            "zipcode" => $address->postalCode,
-            "city" => $address->locality,
-            "country_code" => $address->countryCode,
+            "address1" => $address->address1,
+            "address2" => $address->address2,
+            "zipcode" => $address->zipCode,
+            "city" => $address->city,
+            "country_code" => $address->countryIso,
             "mobile" => ($phoneHandle && $address->$phoneHandle) ? $address->$phoneHandle : '',
             "email" => App::parseEnv($senderEmail),
-            "vat_id" => ($address->organizationTaxId) ? $address->organizationTaxId : '',
+            "vat_id" => ($address->businessTaxId) ? $address->businessTaxId : '',
         ];
     }
 
@@ -580,16 +581,16 @@ class Orders extends Component
      * Get name and attetion based on address
      * If we have company name, Shipmondo requires a attention name
      *
-     * @param \craft\elements\Address $address
+     * @param craft\commerce\models\Address $address
      *
      * @return array
      */
     protected function getNameAndAttention(Address $address): array
     {
         //If we have a company name, use that as name and fullname as attention
-        if ($address->organization && strlen($address->organization)) {
+        if ($address->businessName && strlen($address->businessName)) {
             return [
-                'name' => $address->organization,
+                'name' => $address->businessName,
                 'attention' => $this->getFullName($address)
             ];
         }
@@ -604,7 +605,7 @@ class Orders extends Component
     /**
      * Get fullname based on address
      *
-     * @param \craft\elements\Address $address
+     * @param craft\commerce\models\Address $address
      *
      * @return void
      */

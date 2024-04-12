@@ -1,8 +1,8 @@
 {
   "name": "quantity-digital/commerce-shipmondo",
-  "description": "Shipmondo integration for Craft Commerce 4",
+  "description": "Shipmondo integration for Craft Commerce 3",
   "type": "craft-plugin",
-  "version": "4.0.6",
+  "version": "3.0.0",
   "keywords": [
     "craft",
     "cms",
@@ -24,8 +24,8 @@
     }
   ],
   "require": {
-    "craftcms/cms": "^4.0",
-    "craftcms/commerce": "^4.0",
+    "craftcms/cms": "^3.0",
+    "craftcms/commerce": "^3.0",
     "firebase/php-jwt": "^6.2"
   },
   "autoload": {

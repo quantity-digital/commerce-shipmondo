@@ -17,7 +17,7 @@ class WebhooksController extends Controller
 
     // Disable CSRF validation for the entire controller
     public $enableCsrfValidation = false;
-    public  array|int|bool $allowAnonymous = true;
+    public $allowAnonymous = true;
 
     public function actionOrderUpdateStatus()
     {

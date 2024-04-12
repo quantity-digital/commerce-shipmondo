@@ -49,7 +49,7 @@ class OrderBehavior extends Behavior
      *
      * @var string|null
      */
-    public string|null $servicePointSnapshot = NULL;
+    public $servicePointSnapshot = NULL;
 
 
     /**

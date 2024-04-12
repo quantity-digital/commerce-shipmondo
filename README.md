@@ -4,7 +4,7 @@ This plugin provides an [Shipmondo](https://shipmondo.dk/) integration for [Craf
 
 ## Requirements
 
-This plugin requires Craft CMS 4.0.0 and Craft Commerce 4.0.0 or later.
+This plugin requires Craft CMS 3.0.0 and Craft Commerce 3.0.0 or later.
 
 ## Installation
 
