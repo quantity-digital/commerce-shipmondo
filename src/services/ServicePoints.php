@@ -47,14 +47,14 @@ class ServicePoints extends Component
 
         $params = [
             'carrier_code' => $carrierCode,
-            'country_code' => $shippingAddress->countryCode,
-            'zipcode' => $shippingAddress->postalCode,
+            'country_code' => $shippingAddress->countryIso,
+            'zipcode' => $shippingAddress->zipCode,
             'quantity' => $quantity
         ];
 
-        if (isset($shippingAddress->locality) && isset($shippingAddress->addressLine1) && $shippingAddress->locality && $shippingAddress->addressLine1) {
-            $params['address'] = $shippingAddress->addressLine1;
-            $params['city'] = $shippingAddress->locality;
+        if (isset($shippingAddress->city) && isset($shippingAddress->address1) && $shippingAddress->city && $shippingAddress->address1) {
+            $params['address'] = $shippingAddress->address1;
+            $params['city'] = $shippingAddress->city;
         }
 
         return $params;
@@ -97,14 +97,14 @@ class ServicePoints extends Component
     {
         $params = [
             'carrier_code' => $carrierCode,
-            'country_code' => $address->countryCode,
-            'zipcode' => $address->postalCode,
+            'country_code' => $address->countryIso,
+            'zipcode' => $address->zipCode,
             'quantity' => $quantity
         ];
 
-        if (isset($address->locality) && isset($address->address1) && $address->locality && $address->address1) {
+        if (isset($address->city) && isset($address->address1) && $address->city && $address->address1) {
             $params['address'] = $address->address1;
-            $params['city'] = $address->locality;
+            $params['city'] = $address->city;
         }
 
         return Shipmondo::getInstance()->getShipmondoApi()->getServicePoints($params)->getOutput();
@@ -125,7 +125,7 @@ class ServicePoints extends Component
 
         $params = [
             'carrier_code' => $carrierCode,
-            'country_code' => $shippingAddress->countryCode,
+            'country_code' => $shippingAddress->countryIso,
             'id' => $id,
         ];
 
