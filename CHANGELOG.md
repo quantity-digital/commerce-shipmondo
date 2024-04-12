@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 4.0.7 - 2024-04-12
+
+Added the ability to overwrite sender order information
+
 ## 4.0.6 - 2024-03-20
 
 Fixed issue where queue job would fail if no status was mapped

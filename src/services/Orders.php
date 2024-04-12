@@ -315,6 +315,7 @@ class Orders extends Component
         // Update address to use the event address & receiver
         $address = $event->address;
         $receiver = $event->receiver;
+        $order = $event->order;
 
         //Return address array
         return [
