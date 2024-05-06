@@ -113,12 +113,12 @@ class ServicePoints extends Component
     /**
      * Get service point by id
      *
-     * @param int|string $id
+     * @param mixed $id
      * @param \craft\commerce\elements\Order $order
      *
      * @return array
      */
-    public function getServicePointById(int|string $id, Order $order): array
+    public function getServicePointById(mixed $id, Order $order): array
     {
         $carrierCode = $order->getShippingMethod()->getCarrierCode();
         $shippingAddress = $order->getShippingAddress();
