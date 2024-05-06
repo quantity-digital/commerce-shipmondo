@@ -6,7 +6,7 @@ use craft\base\Component;
 use craft\commerce\elements\Order;
 use QD\commerce\shipmondo\Shipmondo;
 use craft\commerce\Plugin as Commerce;
-use craft\elements\Address;
+use craft\commerce\models\Address;
 use Exception;
 
 class ServicePoints extends Component

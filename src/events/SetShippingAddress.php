@@ -10,7 +10,7 @@ namespace QD\commerce\shipmondo\events;
 
 use craft\commerce\elements\Order;
 use yii\base\Event;
-use craft\elements\Address;
+use craft\commerce\models\Address;
 
 class SetShippingAddress extends Event
 {

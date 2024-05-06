@@ -12,7 +12,7 @@ use Craft;
 use craft\base\Component;
 use craft\commerce\elements\Order;
 use craft\commerce\Plugin as Commerce;
-use craft\elements\Address;
+use craft\commerce\models\Address;
 use craft\helpers\App;
 use craft\helpers\Json;
 use QD\commerce\shipmondo\events\PushShipment as EventsPushShipment;
@@ -291,7 +291,7 @@ class ShipmentService extends Component
      * Get name and attetion based on address
      * If we have company name, Shipmondo requires a attention name
      *
-     * @param \craft\elements\Address $address
+     * @param \craft\commerce\models\Address $address
      *
      * @return array
      */
@@ -315,7 +315,7 @@ class ShipmentService extends Component
     /**
      * Get fullname based on address
      *
-     * @param \craft\elements\Address $address
+     * @param \craft\commerce\models\Address $address
      *
      * @return void
      */

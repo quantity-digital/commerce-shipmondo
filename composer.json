@@ -2,7 +2,7 @@
   "name": "quantity-digital/commerce-shipmondo",
   "description": "Shipmondo integration for Craft Commerce 3",
   "type": "craft-plugin",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "keywords": [
     "craft",
     "cms",
