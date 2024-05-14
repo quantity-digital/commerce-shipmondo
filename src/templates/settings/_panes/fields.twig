@@ -13,7 +13,7 @@
 		options:      settings.getAvailableTextFields(),
 		value:        settings.orderNoteHandle,
 		errors:       settings.getErrors('orderNoteHandle'),
-		disabled:     not allowAdminChanges,
+		disabled:     not allowAdminChanges or macros.readOnly('orderNoteHandle', 'commerce-shipmondo') ? true : false,
 		fieldClass: "width-25",
 		warning: macros.configWarning('orderNoteHandle', 'commerce-shipmondo'),
 	}) }}
@@ -28,7 +28,7 @@
 		options:      settings.getAvailableTextFields(),
 		value:        settings.itemBarcodeHandle,
 		errors:       settings.getErrors('itemBarcodeHandle'),
-		disabled:     not allowAdminChanges,
+		disabled:     not allowAdminChanges or macros.readOnly('itemBarcodeHandle', 'commerce-shipmondo') ? true : false,
 		fieldClass: "width-25",
 		warning: macros.configWarning('itemBarcodeHandle', 'commerce-shipmondo'),
 	}) }}
@@ -41,7 +41,7 @@
 		options:      settings.getAvailableTextFields(),
 		value:        settings.itemBinHandle,
 		errors:       settings.getErrors('itemBinHandle'),
-		disabled:     not allowAdminChanges,
+		disabled:     not allowAdminChanges or macros.readOnly('itemBinHandle', 'commerce-shipmondo') ? true : false,
 		fieldClass: "width-25",
 		warning: macros.configWarning('itemBinHandle', 'commerce-shipmondo'),
 	}) }}
@@ -54,7 +54,7 @@
 		options:      settings.getAvailableTextFields(),
 		value:        settings.itemImageUrlHandle,
 		errors:       settings.getErrors('itemImageUrlHandle'),
-		disabled:     not allowAdminChanges,
+		disabled:     not allowAdminChanges or macros.readOnly('itemImageUrlHandle', 'commerce-shipmondo') ? true : false,
 		fieldClass: "width-25",
 		warning: macros.configWarning('itemImageUrlHandle', 'commerce-shipmondo'),
 	}) }}
@@ -67,7 +67,7 @@
 		options:      settings.getAvailableTextFields(),
 		value:        settings.itemImageUrlHandle,
 		errors:       settings.getErrors('itemProductImageUrlHandle'),
-		disabled:     not allowAdminChanges,
+		disabled:     not allowAdminChanges or macros.readOnly('itemProductImageUrlHandle', 'commerce-shipmondo') ? true : false,
 		fieldClass: "width-25",
 		warning: macros.configWarning('itemProductImageUrlHandle', 'commerce-shipmondo'),
 	}) }}
@@ -82,7 +82,7 @@
 		options:      settings.getAvailableTextFields(),
 		value:        settings.addresPhoneHandle,
 		errors:       settings.getErrors('addresPhoneHandle'),
-		disabled:     not allowAdminChanges,
+		disabled:     not allowAdminChanges or macros.readOnly('addresPhoneHandle', 'commerce-shipmondo') ? true : false,
 		fieldClass: "width-25",
 		warning: macros.configWarning('addresPhoneHandle', 'commerce-shipmondo'),
 	}) }}

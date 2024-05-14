@@ -12,10 +12,9 @@
       options:      settings.getOrderStatuses(),
       values:       settings.orderStatusesToPush,
       errors:       settings.getErrors('orderStatusesToPush'),
-      class: 'selectize fullwidth',
-      disabled:     not allowAdminChanges,
-      warning: macros.configWarning('orderStatusesToPush', 'commerce-shipmondo'),
-      readonly: macros.readOnly('orderStatusesToPush', 'commerce-shipmondo'),
+      class:        'selectize fullwidth',
+      disabled:     not allowAdminChanges or macros.readOnly('orderStatusesToPush', 'commerce-shipmondo') ? true : false,
+      warning:      macros.configWarning('orderStatusesToPush', 'commerce-shipmondo'),
 	  }) }}
   </div>
   <div class="width-50">
@@ -27,10 +26,9 @@
       options:      settings.getOrderStatuses(),
       values:       settings.orderStatusesToUpdate,
       errors:       settings.getErrors('orderStatusesToUpdate'),
-      class: 'selectize fullwidth',
-      disabled:     not allowAdminChanges,
-      warning: macros.configWarning('orderStatusesToUpdate', 'commerce-shipmondo'),
-      readonly: macros.readOnly('orderStatusesToUpdate', 'commerce-shipmondo'),
+      class:        'selectize fullwidth',
+      disabled:     not allowAdminChanges or macros.readOnly('orderStatusesToUpdate', 'commerce-shipmondo') ? true : false,
+      warning:      macros.configWarning('orderStatusesToUpdate', 'commerce-shipmondo'),
     }) }}
   </div>
 
@@ -51,11 +49,11 @@
 				heading: 'Craft order status'|t('commerce-shipmondo')
 			},
 		},
-		rows: settings.orderStatusMapping,
-		allowAdd: true,
+		rows:         settings.orderStatusMapping,
+		allowAdd:     true,
 		allowReorder: false,
-		allowDelete: true,
-		static:     not allowAdminChanges,
-		warning: macros.configWarning('orderStatusMapping', 'commerce-shipmondo'),
+		allowDelete:  true,
+		static:       not allowAdminChanges or macros.readOnly('orderStatusMapping', 'commerce-shipmondo') ? true : false,
+		warning:      macros.configWarning('orderStatusMapping', 'commerce-shipmondo'),
 	}) }}
 </div>
