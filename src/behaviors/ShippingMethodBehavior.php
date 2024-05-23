@@ -152,6 +152,8 @@ class ShippingMethodBehavior extends Behavior
                 'carrierCode' => $carrierCode,
                 'carrierName' => $carrierName,
                 'productCode' => $template['product_code'],
+                'serviceCodes' => $template['service_codes'] ?? null,
+                'ownAgreement' => $template['own_agreement'] ?? false,
                 'requireServicePoint' => $requireServicePoint,
                 'requiredFields' => $requiredFields
             ])

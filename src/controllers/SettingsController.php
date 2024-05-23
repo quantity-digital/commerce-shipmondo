@@ -36,7 +36,7 @@ class SettingsController extends Controller
      */
     public function actionGetShippingTemplates(): Response
     {
-        $templates = Shipmondo::getInstance()->getShipmondoApi()->getShipmentTemplates([
+        $templates = Shipmondo::getInstance()->getShipmondoApi()->getAllShipmentTemplates([
             'per_page' => "500"
         ])->getOutput();
         return $this->asJson($templates);

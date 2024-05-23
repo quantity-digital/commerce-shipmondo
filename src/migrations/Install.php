@@ -62,6 +62,7 @@ class Install extends Migration
             'carrierCode' => $this->string()->null(),
             'carrierName' => $this->string()->null(),
             'productCode' => $this->string()->null(),
+            'serviceCodes' => $this->string()->null(),
             'requireServicePoint' => $this->boolean()->defaultValue(false),
             'requiredFields' => $this->string()->null(),
             'PRIMARY KEY([[id]])',

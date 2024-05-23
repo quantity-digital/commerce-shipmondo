@@ -9,8 +9,6 @@
 namespace QD\commerce\shipmondo;
 
 use Craft;
-use yii\log\FileTarget;
-
 use craft\base\Model as BaseModel;
 use craft\base\Plugin as BasePlugin;
 use craft\commerce\base\ShippingMethod;
@@ -19,9 +17,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\OrderHistories;
 use craft\events\DefineBehaviorsEvent;
-use craft\events\RegisterUserPermissionsEvent;
 use craft\helpers\UrlHelper;
-use craft\services\UserPermissions;
 use QD\commerce\shipmondo\behaviors\OrderBehavior;
 use QD\commerce\shipmondo\behaviors\OrderQueryBehavior;
 use QD\commerce\shipmondo\behaviors\ShippingMethodBehavior;
@@ -36,9 +32,6 @@ class Shipmondo extends BasePlugin
     use Routes;
     use Services;
 
-    // Static Properties
-    // =========================================================================
-
     public static $plugin;
 
     /**
@@ -46,40 +39,23 @@ class Shipmondo extends BasePlugin
      */
     public static $commerceInstalled = false;
 
-    // Public Properties
-    // =========================================================================
-
     /**
      * Schema version
      *
      * @var string
      */
-    public string $schemaVersion = "1.0.2";
+    public string $schemaVersion = "1.0.5";
 
     /**
      * @inheritDoc
      */
     public bool $hasCpSettings = true;
 
-    // Public Methods
-    // =========================================================================
-
-    // public static function log($message)
-    // {
-    //     Craft::getLogger()->log($message, \yii\log\Logger::LEVEL_INFO, 'commerce-shipmondo');
-    // }
-
     /**
      * @inheritdoc
      */
     public function init()
     {
-        // $fileTarget = new FileTarget([
-        //     'logFile' => __DIR__ . '/webhooks.log', // <--- path of the log file
-        //     'categories' => ['commerce-shipmondo'] // <--- categories in the file
-        // ]);
-        // // include the new target file target to the dispatcher
-        // Craft::getLogger()->dispatcher->targets[] = $fileTarget;
         parent::init();
 
         self::$plugin = $this;
@@ -127,7 +103,7 @@ class Shipmondo extends BasePlugin
 
             $shipmondo = $this->getShipmondoApi();
             $context['shipmondoTemplateId'] = $shippingMethod->getShipmondoTemplateId();
-            $shipmondoTemplates = $shipmondo->getShipmentTemplates()->getOutput();
+            $shipmondoTemplates = $shipmondo->getAllShipmentTemplates()->getOutput();
 
             $templates = [
                 null => '---'
