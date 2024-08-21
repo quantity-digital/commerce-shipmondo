@@ -211,13 +211,7 @@ class Orders extends Component
         $convertedOrder = $this->convertOrder($order);
 
         //Try to push order to Shipmondo
-        try {
-            $response = Shipmondo::getInstance()->getShipmondoApi()->createSalesOrder($convertedOrder);
-        } catch (Exception $exception) {
-            //Log error, and return false to indicate failure
-            Craft::error($exception->getMessage(), 'shipmondo');
-            return false;
-        }
+        $response = Shipmondo::getInstance()->getShipmondoApi()->createSalesOrder($convertedOrder);
 
         //Save Shipmondo order ID to order
         Shipmondo::getInstance()->getOrderInfos()->saveShipmondoId($order->id, $response['output']['id']);

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 4.0.8 - 2024-08-21
+
+Changed the output of push order to display error in queue job
+
 ## 4.0.7 - 2024-04-12
 
 Added the ability to overwrite sender order information
