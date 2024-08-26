@@ -436,11 +436,11 @@ class Orders extends Component
      *
      * @return array
      */
-    protected function setServicePoint(Order $order): array
+    protected function setServicePoint(Order $order): object
     {
         //If no service point is set, return empty array
         if (!$order->servicePointId) {
-            return [];
+            return (object)[];
         }
 
         //Get service point data from order snapshot
@@ -458,7 +458,7 @@ class Orders extends Component
 
             //If no data is returned, return empty array
             if (!isset($fetchedData[0])) {
-                return [];
+                return (object)[];
             }
 
             //Set service point data to match the returned data from the api
@@ -466,7 +466,7 @@ class Orders extends Component
         }
 
         //Return service point array
-        return [
+        return (object)[
             "id" => $servicePointData['id'],
             "name" => $servicePointData['name'],
             "address1" => $servicePointData['address'],

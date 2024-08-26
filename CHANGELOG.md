@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 3.0.3 - 2024-08-26
+
+Updated empty servicepoints, to handle data structure change from Shipmondo
+
 ## 3.0.2 - 2024-04-12
 
 Updated params
