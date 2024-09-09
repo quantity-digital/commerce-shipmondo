@@ -102,8 +102,8 @@ class ServicePoints extends Component
             'quantity' => $quantity
         ];
 
-        if (isset($address->locality) && isset($address->address1) && $address->locality && $address->address1) {
-            $params['address'] = $address->address1;
+        if (isset($address->locality) && isset($address->addressLine1) && $address->locality && $address->addressLine1) {
+            $params['address'] = $address->addressLine1;
             $params['city'] = $address->locality;
         }
 
