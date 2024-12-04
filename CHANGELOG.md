@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 5.0.0-alpha (2024-12-03)
+
+### Features
+
+- Updated to CraftCMS 5
+
 ## 4.1.0 - 2024-09-09
 
 Updated "GetServicepointFromAddress" to include the street adress precision, istead of just postalCode

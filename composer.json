@@ -1,8 +1,8 @@
 {
   "name": "quantity-digital/commerce-shipmondo",
-  "description": "Shipmondo integration for Craft Commerce 4",
+  "description": "Shipmondo integration for CraftCMS & Commerce",
   "type": "craft-plugin",
-  "version": "4.1.0",
+  "version": "5.0.0-alpha",
   "keywords": [
     "craft",
     "cms",
@@ -24,9 +24,15 @@
     }
   ],
   "require": {
-    "craftcms/cms": "^4.0",
-    "craftcms/commerce": "^4.0",
+    "craftcms/cms": "^5.0",
+    "craftcms/commerce": "^5.0",
     "firebase/php-jwt": "^6.2"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require-dev": {
+    "craftcms/phpstan": "dev-main",
+    "craftcms/rector": "dev-main"
   },
   "autoload": {
     "psr-4": {

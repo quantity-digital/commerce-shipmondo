@@ -53,7 +53,8 @@ class Orders extends Component
     public function convertOrder(Order $order, array $salesOrder = []): array
     {
         $orderNoteHandle = $this->pluginSettings->orderNoteHandle;
-        $shippingMethod = $order->getShippingMethod();
+
+        $shippingMethod = Commerce::getInstance()->getShippingMethods()->getShippingMethodByHandle((string)$order->shippingMethodHandle);
 
         $shipmondoOrder = [
             "order_id" => $order->reference,
@@ -67,7 +68,7 @@ class Orders extends Component
 
             "ship_to" => $this->setShipTo($order),
             // "bill_to" => $this->setBillTo($order),
-            "sender" => $this->setSender(),
+            "sender" => $this->setSender($order),
             "payment_details" => $this->setPaymentDetails($order),
             "service_point" => $this->setServicePoint($order),
             "order_lines" => $this->setOrderLines($order, isset($salesOrder['order_lines']) ? $salesOrder['order_lines'] : [])
@@ -372,20 +373,18 @@ class Orders extends Component
      *
      * @return array
      */
-    protected function setSender(): array
+    protected function setSender(Order $order): array
     {
         //Get sender name and email from settings
         $craftMailSettings = App::mailSettings();
-        $senderName = Commerce::getInstance()->getSettings()->emailSenderName ?: $craftMailSettings->fromName;
-        $senderEmail = Commerce::getInstance()->getSettings()->emailSenderAddress ?: $craftMailSettings->fromEmail;
+        $senderName = $craftMailSettings->fromName;
+        $senderEmail = $craftMailSettings->fromEmail;
 
         //Get phone handle from settings
         $phoneHandle = $this->pluginSettings->addresPhoneHandle;
 
         //Get store address
-        $address = Commerce::getInstance()->getStore()
-            ->getStore()
-            ->getLocationAddress();
+        $address = Commerce::getInstance()->getStores()->getStoreBySiteId($order->orderSiteId)->getSettings()->locationAddress;
 
         //If no store address is set, return empty array
         if (!$address) {
@@ -395,7 +394,7 @@ class Orders extends Component
         //Return sender array
         return [
             "name" => App::parseEnv($senderName),
-            "attention" => ($address->attention) ? $address->attention : '',
+            "attention" => $address->attention ?? '',
             "address1" => $address->addressLine1,
             "address2" => $address->addressLine2,
             "zipcode" => $address->postalCode,
@@ -403,7 +402,7 @@ class Orders extends Component
             "country_code" => $address->countryCode,
             "mobile" => ($phoneHandle && $address->$phoneHandle) ? $address->$phoneHandle : '',
             "email" => App::parseEnv($senderEmail),
-            "vat_id" => ($address->organizationTaxId) ? $address->organizationTaxId : '',
+            "vat_id" => $address->organizationTaxId ?? '',
         ];
     }
 
@@ -601,9 +600,9 @@ class Orders extends Component
      *
      * @param \craft\elements\Address $address
      *
-     * @return void
+     * @return string
      */
-    protected function getFullName(Address $address)
+    protected function getFullName(Address $address): string
     {
         //If we have a fullname, use that
         if ($address->fullName && strlen($address->fullName)) {
