@@ -70,6 +70,8 @@ class StatusService extends Component
     $orderStatus = $this->getOrderStatusByShipmondoHandle($shipmondoHandle);
 
     if (!$orderStatus) {
+      throw new Exception("No order status found for $shipmondoHandle", 1);
+
       return;
     }
 

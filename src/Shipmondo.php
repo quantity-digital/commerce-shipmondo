@@ -9,7 +9,6 @@
 namespace QD\commerce\shipmondo;
 
 use Craft;
-use yii\log\FileTarget;
 
 use craft\base\Model as BaseModel;
 use craft\base\Plugin as BasePlugin;
@@ -19,9 +18,7 @@ use craft\commerce\elements\Order;
 use craft\commerce\Plugin as Commerce;
 use craft\commerce\services\OrderHistories;
 use craft\events\DefineBehaviorsEvent;
-use craft\events\RegisterUserPermissionsEvent;
 use craft\helpers\UrlHelper;
-use craft\services\UserPermissions;
 use QD\commerce\shipmondo\behaviors\OrderBehavior;
 use QD\commerce\shipmondo\behaviors\OrderQueryBehavior;
 use QD\commerce\shipmondo\behaviors\ShippingMethodBehavior;

@@ -16,7 +16,6 @@ use craft\elements\Address;
 use craft\helpers\App;
 use craft\helpers\Json;
 use QD\commerce\shipmondo\events\PushShipment as EventsPushShipment;
-use QD\commerce\shipmondo\queue\jobs\PushShipment;
 use QD\commerce\shipmondo\Shipmondo;
 
 class ShipmentService extends Component
@@ -66,7 +65,7 @@ class ShipmentService extends Component
 
             'parcels' => $this->setParcels($order),
 
-            'sender' => $this->setSender(),
+            'sender' => $this->setSender($order),
             'receiver' => $this->setReceiver($order),
         ];
 
@@ -131,29 +130,28 @@ class ShipmentService extends Component
      *
      * @return array
      */
-    protected function setSender(): array
+    protected function setSender(Order $order): array
     {
-        // Get sender name and email from Craft Commerce settings
+        //Get sender name and email from settings
         $craftMailSettings = App::mailSettings();
-        $senderName = Commerce::getInstance()->getSettings()->emailSenderName ?: $craftMailSettings->fromName;
-        $senderEmail = Commerce::getInstance()->getSettings()->emailSenderAddress ?: $craftMailSettings->fromEmail;
+        $senderName = $craftMailSettings->fromName;
+        $senderEmail = $craftMailSettings->fromEmail;
 
-        // Get sender phone handle from plugin settings
+        //Get phone handle from settings
         $phoneHandle = $this->pluginSettings->addresPhoneHandle;
 
-        // Get sender address from Craft Commerce settings
-        $address = Commerce::getInstance()->getStore()
-            ->getStore()
-            ->getLocationAddress();
+        //Get store address
+        $address = Commerce::getInstance()->getStores()->getStoreBySiteId($order->orderSiteId)->getSettings()->locationAddress;
 
-        // If no address is set, return empty array
+        //If no store address is set, return empty array
         if (!$address) {
             return [];
         }
 
+        //Return sender array
         return [
             "name" => App::parseEnv($senderName),
-            "attention" => ($address->attention) ? $address->attention : '',
+            "attention" => $address->attention ?? '',
             "address1" => $address->addressLine1,
             "address2" => $address->addressLine2,
             "zipcode" => $address->postalCode,
@@ -161,7 +159,7 @@ class ShipmentService extends Component
             "country_code" => $address->countryCode,
             "mobile" => ($phoneHandle && $address->$phoneHandle) ? $address->$phoneHandle : '',
             "email" => App::parseEnv($senderEmail),
-            "vat_id" => ($address->organizationTaxId) ? $address->organizationTaxId : '',
+            "vat_id" => $address->organizationTaxId ?? '',
         ];
     }
 
@@ -317,9 +315,9 @@ class ShipmentService extends Component
      *
      * @param \craft\elements\Address $address
      *
-     * @return void
+     * @return string
      */
-    protected function getFullName(Address $address)
+    protected function getFullName(Address $address): string
     {
         //If we have a fullname, use that
         if ($address->fullName && strlen($address->fullName)) {
