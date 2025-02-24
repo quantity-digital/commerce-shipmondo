@@ -112,8 +112,12 @@ class Orders extends Component
         $statusesToUpdate = $settings->orderStatusesToUpdate;
 
         //Get the order status handle of the current order
-        $orderStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusById($order->orderStatusId);
-        $orderStatusHandle = $orderStatus->handle;
+        $orderStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusById($order->orderStatusId, $order->storeId);
+        $orderStatusHandle = $orderStatus?->handle ?? null;
+
+        if (!$orderStatusHandle) {
+            return;
+        }
 
         //Order has status that should be updated in Shipmondo
         if (\in_array($orderStatusHandle, $statusesToUpdate)) {
@@ -140,7 +144,7 @@ class Orders extends Component
         $newOrderStatusId = $orderHistory->newStatusId;
 
         //Get the new order status from the id
-        $orderStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusById($newOrderStatusId);
+        $orderStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusById($newOrderStatusId, $order->storeId);
 
         //No order status found, so we dont need to do anything
         if (!$orderStatus) {

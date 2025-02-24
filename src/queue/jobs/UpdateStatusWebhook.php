@@ -103,7 +103,7 @@ class UpdateStatusWebhook extends BaseJob implements RetryableJobInterface
 
     // Update order status
     $this->setProgress($queue, 0.9);
-    Shipmondo::getInstance()->getStatusService()->changeOrderStatusFromShipmondoHandle($order, $status);
+    Shipmondo::getInstance()->getStatusService()->changeOrderStatusFromShipmondoHandle($status, $order);
 
     // Finish queue job
     return;
