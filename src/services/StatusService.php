@@ -46,7 +46,7 @@ class StatusService extends Component
     return '';
   }
 
-  public function getOrderStatusByShipmondoHandle(string $shipmondoHandle): ?OrderStatus
+  public function getOrderStatusByShipmondoHandle(string $shipmondoHandle, Order $order): ?OrderStatus
   {
     $orderStatusHandle = $this->getOrderStatusHandleFromShipmondoHandle($shipmondoHandle);
 
@@ -55,7 +55,7 @@ class StatusService extends Component
       // throw new Exception("Craft status handle matching '{$shipmondoHandle}' not found");
     }
 
-    $orderStatus = Commerce::getInstance()->getOrderStatuses()->getOrderStatusByHandle($orderStatusHandle);
+    $orderStatus = Commerce::getInstance()->getOrderStatuses()->getOrderStatusByHandle($orderStatusHandle, $order->storeId);
 
     if (!$orderStatus) {
       return null;
@@ -65,13 +65,12 @@ class StatusService extends Component
     return $orderStatus;
   }
 
-  public function changeOrderStatusFromShipmondoHandle(Order $order, string $shipmondoHandle)
+  public function changeOrderStatusFromShipmondoHandle(string $shipmondoHandle, Order $order)
   {
-    $orderStatus = $this->getOrderStatusByShipmondoHandle($shipmondoHandle);
+    $orderStatus = $this->getOrderStatusByShipmondoHandle($shipmondoHandle, $order);
 
     if (!$orderStatus) {
-      throw new Exception("No order status found for $shipmondoHandle", 1);
-
+      // throw new Exception("No order status found for $shipmondoHandle", 1);
       return;
     }
 

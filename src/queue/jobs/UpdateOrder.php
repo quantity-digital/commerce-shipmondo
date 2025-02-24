@@ -49,7 +49,7 @@ class UpdateOrder extends BaseJob implements RetryableJobInterface
         }
 
         //Get processing status
-        $processingStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusByHandle('processing');
+        $processingStatus = Plugin::getInstance()->getOrderStatuses()->getOrderStatusByHandle('processing', $order->storeId);
 
         //No shipmondoId or order is not in processing status, so we return and end queue job
         if (!$order->shipmondoId || $processingStatus->id != $order->orderStatusId) {

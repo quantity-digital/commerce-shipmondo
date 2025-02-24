@@ -162,7 +162,7 @@ class Orders extends Component
             return;
         }
 
-        $cancelledStatus = Shipmondo::getInstance()->getStatusService()->getOrderStatusByShipmondoHandle('cancelled');
+        $cancelledStatus = Shipmondo::getInstance()->getStatusService()->getOrderStatusByShipmondoHandle('cancelled', $order->storeId);
         if ($cancelledStatus && $cancelledStatus->id == $newOrderStatusId) {
             $this->cancelOrder($order);
             return;
