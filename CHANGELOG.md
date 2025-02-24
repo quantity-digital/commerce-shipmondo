@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 5.0.0-alpha.1 (2025-02-24)
+
+### Features
+
+- handled order status on multistore setups
+
 ## 5.0.0-alpha (2024-12-03)
 
 ### Features
