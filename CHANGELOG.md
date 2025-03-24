@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 5.0.0-alpha.3 (2025-03-24)
+
+### Fixed
+
+- Handled multistore shipping method fetching
+
 ## 5.0.0-alpha.2 (2025-02-24)
 
 ### Added

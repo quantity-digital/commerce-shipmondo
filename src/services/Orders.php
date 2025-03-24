@@ -54,7 +54,7 @@ class Orders extends Component
     {
         $orderNoteHandle = $this->pluginSettings->orderNoteHandle;
 
-        $shippingMethod = Commerce::getInstance()->getShippingMethods()->getShippingMethodByHandle((string)$order->shippingMethodHandle);
+        $shippingMethod = Commerce::getInstance()->getShippingMethods()->getShippingMethodByHandle((string)$order->shippingMethodHandle, $order->storeId);
 
         $shipmondoOrder = [
             "order_id" => $order->reference,

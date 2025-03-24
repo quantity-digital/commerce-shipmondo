@@ -53,7 +53,7 @@ class ShipmentService extends Component
     public function convertShipment($order, $settings)
     {
         // BASE
-        $shippingMethod = $order->getShippingMethod();
+        $shippingMethod = Commerce::getInstance()->getShippingMethods()->getShippingMethodByHandle((string)$order->shippingMethodHandle, $order->storeId);
 
         $data = [
             'test_mode' => App::devMode(),
